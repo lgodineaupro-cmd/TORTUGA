@@ -7,11 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f1e0;
+            color: #4a3426;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a3426' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        ::-webkit-scrollbar-track { background: #f8f1e0; }
+        ::-webkit-scrollbar-thumb { background: #cfa848; border-radius: 4px; border: 2px solid #f8f1e0; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a3426; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         @keyframes fadeSlideIn {
@@ -21,37 +26,33 @@
         .animate-fade-slide { animation: fadeSlideIn 0.5s ease-out; }
     </style>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {}
-            }
-        }
+        tailwind.config = { theme: { extend: {} } }
     </script>
 </head>
-<body class="bg-slate-950 text-slate-200">
+<body class="bg-[#f8f1e0] text-[#4a3426]">
 
-<div id="app" class="min-h-screen bg-slate-950" style="background: radial-gradient(ellipse at top, #0f172a, #020617 50%, #020617);">
+<div id="app" class="min-h-screen">
 
     <!-- Navbar -->
-    <header class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 border-b border-slate-800">
+    <header class="sticky top-0 z-50 bg-[#4a3426] border-b-4 border-[#cfa848] shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 p-2 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+                <div class="bg-[#cfa848] p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a3426" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
                 </div>
                 <div>
-                    <h1 class="text-white font-bold text-lg leading-none">3D Masterclass</h1>
-                    <span class="text-xs text-indigo-400 font-medium tracking-wider">SYLLABUS INTERACTIF</span>
+                    <h1 class="text-[#f8f1e0] font-bold text-lg leading-none">3D Masterclass</h1>
+                    <span class="text-xs text-[#cfa848] font-bold tracking-wider uppercase">Syllabus Interactif</span>
                 </div>
             </div>
             <div class="flex items-center gap-4">
-                <button id="orgButton" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition-colors border border-indigo-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    <span class="text-sm text-white font-medium">Organisation</span>
+                <button id="orgButton" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#cfa848] hover:bg-[#b8922e] transition-all duration-200 border border-[#b8922e] shadow-[0_3px_0_rgb(140,100,20)] hover:shadow-none hover:translate-y-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a3426" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span class="text-sm text-[#4a3426] font-bold">Organisation</span>
                 </button>
-                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
-                    <span class="text-sm text-slate-300 font-medium hidden sm:inline">Parcours Pro &bull; 10 Semaines</span>
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-[#3a2418] border border-[#cfa848]/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfa848" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+                    <span class="text-sm text-[#f8f1e0] font-medium hidden sm:inline">Parcours Pro &bull; 10 Semaines</span>
                 </div>
             </div>
         </div>
@@ -63,8 +64,8 @@
             <!-- Sidebar -->
             <aside class="md:col-span-4 lg:col-span-3 space-y-4">
                 <div class="flex items-center justify-between mb-4 px-1">
-                    <h2 class="text-slate-400 text-sm font-bold uppercase tracking-wider">Timeline</h2>
-                    <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">10 Modules</span>
+                    <h2 class="text-[#4a3426]/60 text-sm font-bold uppercase tracking-wider">Timeline</h2>
+                    <span class="text-xs bg-[#eaddcf] text-[#4a3426] font-medium px-2 py-0.5 rounded-full border border-[#cfa848]/20">10 Modules</span>
                 </div>
                 <div id="module-list" class="space-y-3 overflow-y-auto max-h-[calc(100vh-12rem)] pb-12 pr-2 scrollbar-hide">
                     <!-- Generated by JS -->
@@ -73,14 +74,14 @@
 
             <!-- Main Content -->
             <section class="md:col-span-8 lg:col-span-9">
-                <div class="bg-slate-900/30 border border-slate-800/50 rounded-3xl p-6 md:p-8 min-h-[800px] shadow-2xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
-                    <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-emerald-600/5 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="bg-white border border-[#eaddcf] rounded-3xl p-6 md:p-8 min-h-[800px] shadow-[0_20px_40px_-10px_rgba(74,52,38,0.1)] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-[#cfa848]/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-[#4a3426]/5 rounded-full blur-3xl pointer-events-none"></div>
                     <div id="module-detail" class="relative z-10">
                         <!-- Generated by JS -->
                     </div>
                 </div>
-                <footer class="mt-8 text-center text-slate-600 text-sm">
+                <footer class="mt-8 text-center text-[#4a3426]/40 text-sm">
                     <p>&copy; 2024 3D Masterclass &bull; Tous droits r&eacute;serv&eacute;s &bull; Document interne</p>
                 </footer>
             </section>
@@ -89,57 +90,57 @@
     </main>
 
     <!-- Organization Modal -->
-    <div id="orgModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden relative">
+    <div id="orgModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#4a3426]/70 backdrop-blur-sm hidden">
+        <div class="bg-[#f8f1e0] border border-[#eaddcf] rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden relative">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-5 flex items-center justify-between">
+            <div class="bg-[#4a3426] px-6 py-5 flex items-center justify-between border-b-4 border-[#cfa848]">
                 <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    <h2 class="text-2xl font-bold text-white">Organisation des Cours</h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#cfa848" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <h2 class="text-2xl font-bold text-[#f8f1e0]">Organisation des Cours</h2>
                 </div>
                 <button id="closeModal" class="p-2 hover:bg-white/10 rounded-lg transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f8f1e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
 
             <!-- Content -->
             <div class="p-8 space-y-8">
-                <p class="text-slate-300 text-lg leading-relaxed">
+                <p class="text-[#5d4231] text-lg leading-relaxed">
                     La formation est organisée pour maximiser votre apprentissage avec un accompagnement quotidien structuré.
                 </p>
 
                 <!-- Schedule Cards -->
                 <div class="space-y-4">
                     <!-- Live Course Card -->
-                    <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-indigo-500/50 transition-all">
+                    <div class="bg-white border border-[#eaddcf] rounded-xl p-6 hover:border-[#cfa848] transition-all shadow-sm">
                         <div class="flex items-start gap-4">
-                            <div class="bg-indigo-600 p-3 rounded-lg shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                            <div class="bg-[#cfa848] p-3 rounded-lg shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a3426" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                             </div>
                             <div class="flex-1">
-                                <h3 class="text-xl font-bold text-white mb-2">Cours Live - 2h en journée</h3>
-                                <p class="text-slate-300 leading-relaxed mb-3">
+                                <h3 class="text-xl font-bold text-[#4a3426] mb-2">Cours Live - 2h en journée</h3>
+                                <p class="text-[#5d4231] leading-relaxed mb-3">
                                     Chaque jour, 2 heures de cours en direct avec démonstrations pratiques et explications détaillées.
                                 </p>
-                                <div class="flex items-center gap-2 text-emerald-400 text-sm">
+                                <div class="flex items-center gap-2 text-[#cfa848] text-sm">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                     </svg>
-                                    <span class="font-medium">Vidéo du cours disponible pour révision</span>
+                                    <span class="font-medium text-[#4a3426]">Vidéo du cours disponible pour révision</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Q&A Throughout Day -->
-                    <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-purple-500/50 transition-all">
+                    <div class="bg-white border border-[#eaddcf] rounded-xl p-6 hover:border-[#cfa848] transition-all shadow-sm">
                         <div class="flex items-start gap-4">
-                            <div class="bg-purple-600 p-3 rounded-lg shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <div class="bg-[#4a3426] p-3 rounded-lg shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#cfa848" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                             </div>
                             <div class="flex-1">
-                                <h3 class="text-xl font-bold text-white mb-2">Questions Durant la Journée</h3>
-                                <p class="text-slate-300 leading-relaxed">
+                                <h3 class="text-xl font-bold text-[#4a3426] mb-2">Questions Durant la Journée</h3>
+                                <p class="text-[#5d4231] leading-relaxed">
                                     Posez vos questions à tout moment pendant votre pratique. Échanges continus sur le forum dédié et support asynchrone.
                                 </p>
                             </div>
@@ -147,21 +148,21 @@
                     </div>
 
                     <!-- Follow-up Session -->
-                    <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 transition-all">
+                    <div class="bg-white border border-[#eaddcf] rounded-xl p-6 hover:border-[#cfa848] transition-all shadow-sm">
                         <div class="flex items-start gap-4">
-                            <div class="bg-amber-600 p-3 rounded-lg shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <div class="bg-[#cfa848] p-3 rounded-lg shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a3426" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                             </div>
                             <div class="flex-1">
-                                <h3 class="text-xl font-bold text-white mb-2">Suivi en Fin de Journée - 1h</h3>
-                                <p class="text-slate-300 leading-relaxed mb-3">
+                                <h3 class="text-xl font-bold text-[#4a3426] mb-2">Suivi en Fin de Journée - 1h</h3>
+                                <p class="text-[#5d4231] leading-relaxed mb-3">
                                     Session d'accompagnement de 1 heure pour répondre à vos questions, débloquer les difficultés rencontrées et valider votre progression.
                                 </p>
-                                <div class="flex items-center gap-2 text-amber-400 text-sm">
+                                <div class="flex items-center gap-2 text-[#cfa848] text-sm">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                     </svg>
-                                    <span class="font-medium">Feedback personnalisé sur votre travail</span>
+                                    <span class="font-medium text-[#4a3426]">Feedback personnalisé sur votre travail</span>
                                 </div>
                             </div>
                         </div>
@@ -169,12 +170,12 @@
                 </div>
 
                 <!-- Summary Banner -->
-                <div class="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border border-indigo-700/50 rounded-xl p-6">
+                <div class="bg-[#eaddcf] border border-[#cfa848]/40 rounded-xl p-6">
                     <div class="text-center">
-                        <p class="text-lg font-semibold text-white mb-2">
+                        <p class="text-lg font-semibold text-[#4a3426] mb-2">
                             📚 Format Quotidien = 3h d'encadrement 
                         </p>
-                        <p class="text-slate-300 text-sm">
+                        <p class="text-[#5d4231] text-sm">
                             2h de cours live + 1h de suivi personnalisé + support continu
                         </p>
                     </div>
@@ -182,8 +183,8 @@
             </div>
 
             <!-- Footer -->
-            <div class="bg-slate-800/50 px-6 py-4 flex justify-end border-t border-slate-700">
-                <button id="closeModalBtn" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg transition-colors">
+            <div class="bg-[#eaddcf] px-6 py-4 flex justify-end border-t border-[#cfa848]/30">
+                <button id="closeModalBtn" class="px-6 py-2 bg-[#cfa848] hover:bg-[#b8922e] text-[#4a3426] font-bold rounded-lg transition-all shadow-[0_3px_0_rgb(140,100,20)] hover:shadow-none hover:translate-y-0.5">
                     Fermer
                 </button>
             </div>
@@ -430,24 +431,24 @@ function renderModuleList() {
         const isActive = m.id === activeModuleId;
         return `
         <button onclick="selectModule(${m.id})" class="w-full text-left p-4 rounded-xl border transition-all duration-300 group flex items-center justify-between
-            ${isActive 
-                ? 'bg-indigo-900/40 border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
-                : 'bg-slate-900/50 border-slate-800 hover:border-slate-600 hover:bg-slate-800/50'
+            ${isActive
+                ? 'bg-[#4a3426] border-[#cfa848] shadow-[0_4px_0_rgba(207,168,72,0.3)]'
+                : 'bg-white border-[#eaddcf] hover:border-[#cfa848] hover:bg-[#fdf7ec] shadow-sm'
             }">
             <div class="flex items-center gap-4">
-                <div class="p-3 rounded-lg ${isActive ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-slate-400 group-hover:text-slate-200'}">
+                <div class="p-3 rounded-lg ${isActive ? 'bg-[#cfa848] text-[#4a3426]' : 'bg-[#eaddcf] text-[#4a3426] group-hover:bg-[#cfa848]/30 transition-colors'}">
                     ${getModuleIcon(m.category, m.title)}
                 </div>
                 <div>
-                    <span class="text-xs font-bold uppercase tracking-wider ${isActive ? 'text-indigo-400' : 'text-slate-500'}">
+                    <span class="text-xs font-bold uppercase tracking-wider ${isActive ? 'text-[#cfa848]' : 'text-[#4a3426]/50'}">
                         Semaine ${m.week}
                     </span>
-                    <h3 class="font-semibold text-lg leading-tight ${isActive ? 'text-white' : 'text-slate-300'}">
+                    <h3 class="font-semibold text-base leading-tight ${isActive ? 'text-[#f8f1e0]' : 'text-[#4a3426]'}">
                         ${m.title}
                     </h3>
                 </div>
             </div>
-            <span class="transition-transform ${isActive ? 'text-indigo-400' : 'text-slate-600 opacity-0 group-hover:opacity-100'}">
+            <span class="transition-transform ${isActive ? 'text-[#cfa848]' : 'text-[#4a3426]/30 opacity-0 group-hover:opacity-100'}">
                 ${ICONS.chevronRight}
             </span>
         </button>`;
@@ -459,32 +460,32 @@ function renderModuleDetail() {
     const container = document.getElementById('module-detail');
 
     const toolsHtml = m.tools.map(t => `
-        <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-sm font-medium">
-            <span class="text-slate-500">${ICONS.penTool}</span>
+        <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#eaddcf] border border-[#cfa848]/30 text-[#4a3426] text-sm font-medium">
+            <span class="text-[#cfa848]">${ICONS.penTool}</span>
             ${t}
         </span>`).join('');
 
     const deliverablesHtml = m.deliverables.map(d => `
-        <li class="flex items-start gap-3 text-sm text-slate-300">
-            <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></div>
+        <li class="flex items-start gap-3 text-sm text-[#5d4231]">
+            <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#cfa848] shrink-0"></div>
             ${d}
         </li>`).join('');
 
     const scheduleHtml = m.schedule.map(day => {
         const tasksHtml = day.tasks.map(t => `
-            <li class="flex items-start gap-2 text-slate-400 text-sm">
-                <span class="mt-1.5 w-1 h-1 bg-slate-600 rounded-full shrink-0"></span>
+            <li class="flex items-start gap-2 text-[#5d4231] text-sm">
+                <span class="mt-1.5 w-1 h-1 bg-[#cfa848]/60 rounded-full shrink-0"></span>
                 ${t}
             </li>`).join('');
         return `
-        <div class="group bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-slate-600 transition-colors">
+        <div class="group bg-[#fdf7ec] border border-[#eaddcf] rounded-xl overflow-hidden hover:border-[#cfa848] transition-colors shadow-sm">
             <div class="p-4 flex flex-col md:flex-row md:items-center gap-4">
-                <div class="flex-shrink-0 w-16 h-16 bg-slate-950 rounded-lg flex flex-col items-center justify-center border border-slate-800 group-hover:border-indigo-500/50 transition-colors">
-                    <span class="text-xs text-slate-500 uppercase font-bold">Jour</span>
-                    <span class="text-2xl font-bold text-white">${day.day}</span>
+                <div class="flex-shrink-0 w-16 h-16 bg-white rounded-lg flex flex-col items-center justify-center border border-[#eaddcf] group-hover:border-[#cfa848] transition-colors shadow-sm">
+                    <span class="text-xs text-[#4a3426]/40 uppercase font-bold">Jour</span>
+                    <span class="text-2xl font-bold text-[#4a3426]">${day.day}</span>
                 </div>
                 <div class="flex-grow">
-                    <h3 class="font-bold text-indigo-300 mb-2">${day.title}</h3>
+                    <h3 class="font-bold text-[#4a3426] mb-2 border-l-2 border-[#cfa848] pl-2">${day.title}</h3>
                     <ul class="grid grid-cols-1 gap-2">${tasksHtml}</ul>
                 </div>
             </div>
@@ -494,33 +495,33 @@ function renderModuleDetail() {
     container.innerHTML = `
     <div class="animate-fade-slide p-1">
         <!-- Header -->
-        <div class="mb-8 border-b border-slate-800 pb-6">
+        <div class="mb-8 border-b border-[#eaddcf] pb-6">
             <div class="flex items-center gap-2 mb-2">
-                <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-xs font-bold uppercase tracking-widest border border-indigo-500/20">
+                <span class="px-3 py-1 bg-[#cfa848]/15 text-[#4a3426] rounded-full text-xs font-bold uppercase tracking-widest border border-[#cfa848]/30">
                     Module ${m.id}
                 </span>
-                <span class="text-slate-500 text-sm font-medium">| Semaine ${m.week}</span>
+                <span class="text-[#4a3426]/40 text-sm font-medium">| Semaine ${m.week}</span>
             </div>
-            <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">${m.title}</h1>
-            <p class="text-lg text-slate-400 max-w-2xl leading-relaxed">${m.description}</p>
+            <h1 class="text-3xl md:text-4xl font-black text-[#4a3426] mb-4">${m.title}</h1>
+            <p class="text-lg text-[#5d4231] max-w-2xl leading-relaxed">${m.description}</p>
             <div class="flex flex-wrap gap-2 mt-4">${toolsHtml}</div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Column -->
             <div class="lg:col-span-1 space-y-8">
-                <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                    <div class="flex items-center gap-3 mb-4 text-emerald-400">
+                <div class="bg-[#f8f1e0] p-6 rounded-2xl border border-[#eaddcf] shadow-sm">
+                    <div class="flex items-center gap-3 mb-4 text-[#cfa848]">
                         ${ICONS.trophy}
-                        <h2 class="font-bold text-lg">Objectif</h2>
+                        <h2 class="font-bold text-lg text-[#4a3426]">Objectif</h2>
                     </div>
-                    <p class="text-slate-300 text-sm leading-relaxed">${m.objective}</p>
+                    <p class="text-[#5d4231] text-sm leading-relaxed">${m.objective}</p>
                 </div>
 
-                <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                    <div class="flex items-center gap-3 mb-4 text-blue-400">
+                <div class="bg-[#f8f1e0] p-6 rounded-2xl border border-[#eaddcf] shadow-sm">
+                    <div class="flex items-center gap-3 mb-4 text-[#cfa848]">
                         ${ICONS.checkCircle}
-                        <h2 class="font-bold text-lg">Livrables</h2>
+                        <h2 class="font-bold text-lg text-[#4a3426]">Livrables</h2>
                     </div>
                     <ul class="space-y-3">${deliverablesHtml}</ul>
                 </div>
@@ -529,8 +530,8 @@ function renderModuleDetail() {
             <!-- Right Column -->
             <div class="lg:col-span-2">
                 <div class="flex items-center gap-3 mb-6">
-                    <span class="text-indigo-400">${ICONS.calendar}</span>
-                    <h2 class="text-xl font-bold text-white">Planning de la semaine</h2>
+                    <span class="text-[#cfa848]">${ICONS.calendar}</span>
+                    <h2 class="text-xl font-bold text-[#4a3426]">Planning de la semaine</h2>
                 </div>
                 <div class="space-y-4">${scheduleHtml}</div>
             </div>

@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pierre Dubois — 3D Artist Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #f8f1e0; }
+    ::-webkit-scrollbar-thumb { background: #cfa848; border-radius: 5px; border: 2px solid #f8f1e0; }
+    ::-webkit-scrollbar-thumb:hover { background: #4a3426; }
+
+    body {
+      background-color: #f8f1e0;
+      color: #4a3426;
+      overflow-x: hidden;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234a3426' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Animations */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes bounce { 0%, 100% { transform: translateY(0) translateX(-50%); } 50% { transform: translateY(-10px) translateX(-50%); } }
+
+    /* Scroll indicator */
+    @keyframes scrollWheel { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(12px); } }
+    @keyframes scrollPulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    @keyframes scrollChevrons { 0% { opacity: 0; transform: translateY(-4px); } 50% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(4px); } }
+    .scroll-indicator { cursor: pointer; transition: all 0.3s ease; }
+    .scroll-indicator:hover { transform: translateX(-50%) scale(1.1); }
+    .scroll-indicator:hover .scroll-label { opacity: 1; letter-spacing: 0.25em; }
+    .scroll-mouse { width: 26px; height: 42px; border: 2.5px solid #cfa848; border-radius: 14px; position: relative; }
+    .scroll-mouse::before { content: ''; position: absolute; top: 7px; left: 50%; width: 4px; height: 8px; margin-left: -2px; background: #cfa848; border-radius: 2px; animation: scrollWheel 1.6s ease-in-out infinite; }
+    .scroll-chevron { opacity: 0; animation: scrollChevrons 1.6s ease-in-out infinite; }
+    .scroll-chevron:nth-child(2) { animation-delay: 0.15s; }
+    .scroll-chevron:nth-child(3) { animation-delay: 0.3s; }
+    .scroll-label { transition: all 0.4s ease; opacity: 0.5; }
+
+    .animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
+    .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
+    .animate-fadeInScale { animation: fadeInScale 0.4s ease-out forwards; }
+    .animate-slideInRight { animation: slideInRight 0.6s ease-out forwards; }
+    .animate-slideInLeft { animation: slideInLeft 0.6s ease-out forwards; }
+    .animate-bounce-custom { animation: bounce 2s infinite; }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    .delay-500 { animation-delay: 0.5s; }
+    .delay-600 { animation-delay: 0.6s; }
+    .delay-800 { animation-delay: 0.8s; }
+
+    /* Start hidden for animated elements */
+    .anim-initial { opacity: 0; }
+
+    /* Free Position Portfolio Layout */
+    .portfolio-wrapper {
+      container-type: inline-size;
+      position: relative;
+      width: 100%;
+      margin: 0 auto;
+      transition: max-width 0.4s ease;
+    }
+    /* Grid scale levels */
+    .portfolio-wrapper.scale-P { max-width: 700px; }
+    .portfolio-wrapper.scale-M { max-width: 1100px; }
+    .portfolio-wrapper.scale-G { max-width: 100%; }
+    .portfolio-card {
+      position: absolute;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    /* Responsive text in card overlays */
+    .scale-P .card-overlay h3 { font-size: 11px; }
+    .scale-P .card-overlay p { font-size: 9px; }
+    .scale-P .card-overlay .tag { font-size: 7px; padding: 1px 4px; }
+    .scale-M .card-overlay h3 { font-size: 13px; }
+    .scale-M .card-overlay p { font-size: 10px; }
+    .scale-M .card-overlay .tag { font-size: 8px; }
+    .scale-G .card-overlay h3 { font-size: 14px; }
+    .scale-G .card-overlay p { font-size: 11px; }
+    .scale-G .card-overlay .tag { font-size: 9px; }
+    /* Mobile: stack cards vertically */
+    @media (max-width: 639px) {
+      .portfolio-wrapper { container-type: unset; }
+      .portfolio-card { position: static !important; left: auto !important; top: auto !important; width: 100% !important; height: auto !important; margin-bottom: 16px; }
+      .portfolio-card .portfolio-img { height: auto !important; aspect-ratio: 4/3; }
+    }
+    /* Card inner fills flex space */
+    .portfolio-card > div { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .portfolio-card .portfolio-img { flex: 1; min-height: 0; width: 100%; object-fit: cover; }
+    /* Gallery grid keeps auto column layout */
+    #galleryGrid { display: block; columns: 3; column-gap: 1.25rem; }
+    #galleryGrid > * { break-inside: avoid; margin-bottom: 1.25rem; }
+
+    /* Modal transitions */
+    .modal-backdrop { transition: opacity 0.3s ease; }
+    .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; }
+
+    /* Hover card slide up */
+    .card-overlay { transform: translateY(101%); transition: transform 0.3s ease-out; max-height: 130px; overflow: hidden; }
+    .portfolio-card:hover .card-overlay { transform: translateY(0); }
+    .portfolio-card:hover img.portfolio-img { transform: scale(1.05); }
+    .portfolio-img { transition: transform 0.7s ease; }
+
+    /* Shop category hover */
+    .shop-cat:hover .shop-cat-img { transform: scale(1.05); }
+    .shop-cat-img { transition: transform 0.7s ease; }
+    .shop-cat:hover .shop-cat-arrow { opacity: 1; transform: translateX(0); }
+    .shop-cat-arrow { opacity: 0; transform: translateX(1rem); transition: all 0.3s ease; }
+    .shop-cat:hover .shop-cat-icon { background: #cfa848; color: #4a3426; }
+
+    /* Gallery hover overlay */
+    .gallery-item:hover .gallery-overlay { transform: translateY(0); }
+    .gallery-overlay { transform: translateY(100%); transition: transform 0.5s ease-out; }
+    .gallery-item:hover .gallery-img-wrap { transform: scale(1.03); box-shadow: 0 20px 40px -10px rgba(207,168,72,0.3); }
+    .gallery-img-wrap { transition: all 0.3s ease; }
+    .gallery-video-wrap { position: relative; }
+    .gallery-video-wrap .video-play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); pointer-events: none; }
+    .gallery-video-wrap .video-play-overlay svg { width: 48px; height: 48px; fill: rgba(207,168,72,0.9); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); }
+    .modal-video-container { width: 100%; max-width: 90vw; max-height: 85vh; aspect-ratio: 16/9; }
+    .modal-video-container iframe, .modal-video-container video { width: 100%; height: 100%; border-radius: 8px; }
+
+    /* Lightbox caption */
+    .lightbox-group:hover .lightbox-caption { opacity: 1; }
+    .lightbox-caption { opacity: 0; transition: opacity 0.3s ease; }
+
+    /* Image area hover for open gallery */
+    .img-area:hover .open-gallery-btn { opacity: 1; }
+    .open-gallery-btn { opacity: 0; transition: opacity 0.3s ease; }
+
+    /* Custom scrollbar for modal */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cfa848; border-radius: 3px; }
+
+    /* Line clamp */
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* CV Modal */
+    .cv-timeline-item { position: relative; padding-left: 2.5rem; padding-bottom: 2rem; }
+    .cv-timeline-item::before { content: ''; position: absolute; left: 0.5rem; top: 0.5rem; width: 12px; height: 12px; background: #cfa848; border-radius: 50%; border: 3px solid #f8f1e0; z-index: 2; }
+    .cv-timeline-item::after { content: ''; position: absolute; left: 0.85rem; top: 1.5rem; bottom: 0; width: 2px; background: #eaddcf; z-index: 1; }
+    .cv-timeline-item:last-child::after { display: none; }
+    .cv-skill-bar { height: 8px; border-radius: 4px; background: #eaddcf; overflow: hidden; }
+    .cv-skill-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #cfa848, #4a3426); transition: width 1s ease-out; }
+    .cv-software-icon { transition: all 0.3s ease; }
+    .cv-software-icon:hover { transform: translateY(-4px); box-shadow: 0 8px 20px -4px rgba(207,168,72,0.4); }
+
+    /* Profile photo pulse hint */
+    @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.3); opacity: 0; } }
+    .profile-pulse::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 3px solid #cfa848; animation: pulseRing 2s ease-out infinite; pointer-events: none; }
+
+    /* Booked slot */
+    .slot-booked { background: #eaddcf !important; color: #a89080 !important; cursor: not-allowed !important; text-decoration: line-through; border-color: #eaddcf !important; }
+    .date-booked { background: #e8d5b8 !important; color: #a89080 !important; position: relative; }
+    .date-booked::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #cfa848; }
+  </style>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>emailjs.init("kjkeBSP5Ylmps9Zel");</script>
+</head>
+<body class="bg-[#f8f1e0] text-[#4a3426] antialiased selection:bg-[#4a3426] selection:text-[#cfa848]">
+
+  <div id="app" class="min-h-screen flex flex-col font-sans">
+
+    <!-- ==================== NAVBAR ==================== -->
+    <nav class="sticky top-0 z-50 w-full bg-[#4a3426] shadow-md border-b-4 border-[#cfa848]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+          <div class="flex-shrink-0 cursor-pointer" onclick="navigateTo('portfolio')">
+            <span class="text-2xl font-black text-[#f8f1e0] tracking-tight">
+              Home <span class="text-[#cfa848]">Coffee</span>
+            </span>
+          </div>
+          <!-- Desktop Nav -->
+          <div class="hidden md:block">
+            <div class="ml-10 flex items-baseline space-x-2" id="nav-desktop">
+              <button onclick="navigateTo('portfolio')" data-nav="portfolio" class="nav-btn active-nav px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 text-sm font-bold">
+                <i data-lucide="palette" class="w-4 h-4"></i> Portfolio
+              </button>
+              <button onclick="navigateTo('services')" data-nav="services" class="nav-btn px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 text-sm font-bold">
+                <i data-lucide="briefcase" class="w-4 h-4"></i> Services
+              </button>
+              <button onclick="navigateTo('mentorship')" data-nav="mentorship" class="nav-btn px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 text-sm font-bold">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i> Mentorship
+              </button>
+              <button onclick="navigateTo('shop')" data-nav="shop" class="nav-btn px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 text-sm font-bold">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i> Shop
+              </button>
+              <button onclick="navigateTo('contact')" data-nav="contact" class="nav-btn px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 text-sm font-bold">
+                <i data-lucide="mail" class="w-4 h-4"></i> Contact
+              </button>
+            </div>
+          </div>
+          <!-- Mobile Nav -->
+          <div class="md:hidden flex space-x-1" id="nav-mobile">
+            <button onclick="navigateTo('portfolio')" data-nav="portfolio" class="nav-btn-m active-nav-m p-2 rounded-lg transition-colors"><i data-lucide="palette" class="w-5 h-5"></i></button>
+            <button onclick="navigateTo('services')" data-nav="services" class="nav-btn-m p-2 rounded-lg transition-colors"><i data-lucide="briefcase" class="w-5 h-5"></i></button>
+            <button onclick="navigateTo('mentorship')" data-nav="mentorship" class="nav-btn-m p-2 rounded-lg transition-colors"><i data-lucide="graduation-cap" class="w-5 h-5"></i></button>
+            <button onclick="navigateTo('shop')" data-nav="shop" class="nav-btn-m p-2 rounded-lg transition-colors"><i data-lucide="shopping-bag" class="w-5 h-5"></i></button>
+            <button onclick="navigateTo('contact')" data-nav="contact" class="nav-btn-m p-2 rounded-lg transition-colors"><i data-lucide="mail" class="w-5 h-5"></i></button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="flex-grow">
+
+      <!-- ========== PORTFOLIO VIEW ========== -->
+      <div id="view-portfolio" class="view-section">
+
+        <!-- HERO -->
+        <div class="relative min-h-[95vh] flex flex-col items-center justify-start pt-32 bg-[#f8f1e0] overflow-hidden">
+          <!-- Banner Background -->
+          <div class="absolute top-0 left-0 w-full h-[600px] z-0 pointer-events-none">
+            <img src="images/local_1774051854151.jpg" alt="Work Preview" class="w-full h-full object-cover opacity-80">
+            <div class="absolute inset-0 bg-[#4a3426]/10"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-[#4a3426]/20 via-[#f8f1e0]/60 to-[#f8f1e0] z-10"></div>
+            <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#f8f1e0] to-transparent z-10"></div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center mt-12">
+            <!-- Profile Header -->
+            <div class="text-center mb-12 flex flex-col items-center animate-fadeInUp">
+              <div class="relative cursor-pointer group profile-pulse" onclick="openCVModal()" title="Click to view CV">
+                <div class="absolute inset-0 bg-[#f8f1e0] rounded-full blur-xl opacity-80 scale-110"></div>
+                <div class="relative w-40 h-40 rounded-full border-[6px] border-[#cfa848] overflow-hidden shadow-2xl mb-2 bg-[#4a3426] group-hover:border-[#4a3426] transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(207,168,72,0.4)]">
+                  <img src="images/project_1773009877485.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Pierre Dubois" />
+                  <div class="absolute inset-0 bg-[#4a3426]/0 group-hover:bg-[#4a3426]/40 transition-all duration-300 flex items-center justify-center">
+                    <span class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold text-xs uppercase tracking-widest">View CV</span>
+                  </div>
+                </div>
+              </div>
+              <p class="text-[#cfa848] text-[10px] font-bold uppercase tracking-widest mb-4 opacity-60">Click photo for CV</p>
+              <h1 class="text-6xl md:text-8xl font-black text-[#cfa848] tracking-tight leading-none drop-shadow-[0_4px_0_rgba(74,52,38,0.3)] mb-2">PIERRE DUBOIS</h1>
+              <h2 class="text-[#4a3426] font-bold tracking-[0.3em] uppercase text-sm md:text-base bg-[#f8f1e0]/80 backdrop-blur-sm px-4 py-1 rounded-full">3D Digital Artist & Creator</h2>
+            </div>
+
+            <!-- Main Info Card -->
+            <div class="w-full mt-40 bg-white rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(74,52,38,0.15)] p-8 md:p-10 border border-[#eaddcf] anim-initial animate-fadeInUp delay-200">
+              <div class="flex flex-col md:flex-row gap-10 items-center md:items-stretch">
+                <!-- Center Text -->
+                <div class="flex-1 text-center md:text-left flex flex-col justify-center">
+                  <div class="text-[#5d4231] font-medium leading-relaxed mb-6 text-sm">
+                    <p class="mb-3">My artistic journey began in traditional sculpture, exploring form and anatomy. Today, I blend that foundation with digital precision to craft immersive 3D realities.</p>
+                    <p>Specializing in stylized characters and environments, I bring a unique "flavor" to every project, focusing on storytelling and visual impact.</p>
+                  </div>
+                  <div class="flex items-center justify-center md:justify-start gap-2">
+                    <a href="#" class="w-10 h-10 bg-[#cfa848] hover:bg-[#4a3426] text-white rounded-lg flex items-center justify-center transition-all shadow-[0_4px_0_rgb(180,140,50)] hover:shadow-none hover:translate-y-1"><i data-lucide="instagram" class="w-[18px] h-[18px]"></i></a>
+                    <a href="#" class="w-10 h-10 bg-[#cfa848] hover:bg-[#4a3426] text-white rounded-lg flex items-center justify-center transition-all shadow-[0_4px_0_rgb(180,140,50)] hover:shadow-none hover:translate-y-1"><i data-lucide="twitter" class="w-[18px] h-[18px]"></i></a>
+                    <a href="#" class="w-10 h-10 bg-[#cfa848] hover:bg-[#4a3426] text-white rounded-lg flex items-center justify-center transition-all shadow-[0_4px_0_rgb(180,140,50)] hover:shadow-none hover:translate-y-1"><i data-lucide="linkedin" class="w-[18px] h-[18px]"></i></a>
+                    <a href="mailto:contact@example.com" class="w-10 h-10 bg-[#cfa848] hover:bg-[#4a3426] text-white rounded-lg flex items-center justify-center transition-all shadow-[0_4px_0_rgb(180,140,50)] hover:shadow-none hover:translate-y-1"><i data-lucide="mail" class="w-[18px] h-[18px]"></i></a>
+                  </div>
+                </div>
+                <!-- Right Column - Actions -->
+                <div class="flex flex-col gap-4 w-full md:w-48 justify-center">
+                  <button onclick="openDemoreel()" class="group bg-[#4a3426] text-white rounded-xl h-32 flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-[1.02] border-2 border-[#4a3426]">
+                    <div class="w-12 h-12 rounded-full border-2 border-[#cfa848] flex items-center justify-center mb-2 group-hover:bg-[#cfa848] group-hover:text-[#4a3426] transition-colors"><i data-lucide="play" class="w-5 h-5"></i></div>
+                    <span class="font-bold uppercase tracking-widest text-[10px] text-[#cfa848]">Play Reel</span>
+                  </button>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-[#cfa848] rounded-xl p-3 text-center shadow-md">
+                      <div class="text-2xl font-black text-[#4a3426]">5+</div>
+                      <div class="text-[9px] text-white font-black uppercase tracking-wider">Years</div>
+                    </div>
+                    <div class="bg-[#cfa848] rounded-xl p-3 text-center shadow-md">
+                      <div class="text-2xl font-black text-[#4a3426]">42</div>
+                      <div class="text-[9px] text-white font-black uppercase tracking-wider">Projs</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scroll Indicator -->
+          <div class="scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3" onclick="document.getElementById('portfolioSection').scrollIntoView({behavior:'smooth'})">
+            <span class="scroll-label text-[#cfa848] text-[9px] font-black uppercase tracking-[0.2em]">Scroll</span>
+            <div class="scroll-mouse"></div>
+            <div class="flex flex-col items-center -mt-1">
+              <svg class="scroll-chevron w-4 h-4 text-[#cfa848]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="scroll-chevron w-4 h-4 -mt-2 text-[#cfa848]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="scroll-chevron w-4 h-4 -mt-2 text-[#cfa848]/50" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- PORTFOLIO GRID -->
+        <div id="portfolioSection" class="relative w-full pt-32 pb-20 px-4 sm:px-6 lg:px-10">
+          <!-- Header -->
+          <div class="mb-16 relative w-full max-w-[1400px]">
+            <div class="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-[#e3d4b6] via-[#e3d4b6] to-transparent z-0 rounded-l-lg"></div>
+            <div class="relative z-10 py-10 px-8">
+              <h2 class="text-6xl font-black text-[#4a3426] mb-4 tracking-tighter drop-shadow-sm">Selected Works</h2>
+              <p class="text-[#5d4231] font-medium text-xl max-w-2xl mb-8">A collection of digital artifacts, characters, and environments.</p>
+              <div class="flex flex-wrap items-center gap-4">
+                <button id="clearFiltersBtn" onclick="clearFilters()" class="hidden items-center gap-2 px-4 py-2 rounded-full bg-[#4a3426] text-[#f8f1e0] font-bold text-sm hover:bg-[#cfa848] hover:text-[#4a3426] transition-colors shadow-sm">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i> Clear All
+                </button>
+                <div class="flex flex-wrap gap-2" id="tagFilters">
+                  <!-- Tags generated by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid -->
+          <div class="portfolio-wrapper" id="portfolioGrid">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- No results -->
+          <div id="noResults" class="hidden text-center py-32 px-4">
+            <div class="inline-block p-6 rounded-full bg-[#e3d4b6] mb-6"><i data-lucide="filter" class="w-12 h-12 text-[#4a3426]"></i></div>
+            <p class="text-[#4a3426] text-2xl font-bold">No projects found.</p>
+            <button onclick="clearFilters()" class="mt-6 text-[#cfa848] font-bold text-lg hover:underline underline-offset-4">Clear filters</button>
+          </div>
+        </div>
+
+        <!-- TRUSTED BY -->
+        <div class="w-full bg-white py-24 border-t border-[#eaddcf]">
+          <div class="max-w-7xl mx-auto px-4 text-center">
+            <h3 class="text-3xl md:text-4xl font-normal text-[#4a3426] uppercase tracking-wide mb-16 animate-fadeInUp">Trusted By Industry Leaders</h3>
+            <div class="flex flex-wrap justify-center gap-8 md:gap-16">
+              <div class="w-24 h-24 rounded-full border border-[#4a3426] flex items-center justify-center hover:bg-[#f8f1e0] transition-colors duration-300 group cursor-default"><i data-lucide="gamepad-2" class="w-8 h-8 text-[#4a3426] group-hover:scale-110 transition-transform duration-300"></i></div>
+              <div class="w-24 h-24 rounded-full border border-[#4a3426] flex items-center justify-center hover:bg-[#f8f1e0] transition-colors duration-300 group cursor-default"><i data-lucide="tv" class="w-8 h-8 text-[#4a3426] group-hover:scale-110 transition-transform duration-300"></i></div>
+              <div class="w-24 h-24 rounded-full border border-[#4a3426] flex items-center justify-center hover:bg-[#f8f1e0] transition-colors duration-300 group cursor-default"><i data-lucide="building-2" class="w-8 h-8 text-[#4a3426] group-hover:scale-110 transition-transform duration-300"></i></div>
+              <div class="w-24 h-24 rounded-full border border-[#4a3426] flex items-center justify-center hover:bg-[#f8f1e0] transition-colors duration-300 group cursor-default"><i data-lucide="globe-2" class="w-8 h-8 text-[#4a3426] group-hover:scale-110 transition-transform duration-300"></i></div>
+              <div class="w-24 h-24 rounded-full border border-[#4a3426] flex items-center justify-center hover:bg-[#f8f1e0] transition-colors duration-300 group cursor-default"><i data-lucide="gamepad-2" class="w-8 h-8 text-[#4a3426] group-hover:scale-110 transition-transform duration-300"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== SERVICES VIEW ========== -->
+      <div id="view-services" class="view-section hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div class="text-center mb-16">
+            <h2 class="text-4xl font-black text-[#4a3426] sm:text-5xl tracking-tight mb-4">Services & Booking</h2>
+            <p class="text-xl text-[#8c7664] max-w-2xl mx-auto font-medium">Choose a service and schedule a time that works for you.</p>
+          </div>
+          <div class="grid lg:grid-cols-3 gap-12">
+            <!-- Services List -->
+            <div class="lg:col-span-1 space-y-6">
+              <h3 class="text-xl font-bold text-[#4a3426] mb-6 flex items-center gap-2"><i data-lucide="layers" class="w-5 h-5 text-[#4a3426]"></i> Available Services</h3>
+              <div id="servicesList">
+                <!-- Generated by JS -->
+              </div>
+            </div>
+            <!-- Calendar & Booking -->
+            <div class="lg:col-span-2 bg-white rounded-2xl border border-[#eaddcf] p-8 flex flex-col shadow-xl">
+              <div id="bookingConfirmed" class="hidden flex-1 flex-col items-center justify-center text-center p-12 animate-fadeInScale">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6"><i data-lucide="check" class="w-10 h-10 text-green-600"></i></div>
+                <h3 class="text-3xl font-bold text-[#4a3426] mb-2">Booking Confirmed!</h3>
+                <p class="text-[#8c7664]">You will receive a confirmation email shortly.</p>
+              </div>
+              <div id="bookingForm">
+                <div class="flex flex-col md:flex-row gap-8 h-full">
+                  <!-- Calendar -->
+                  <div class="flex-1">
+                    <h3 class="text-lg font-bold text-[#4a3426] mb-6 flex items-center gap-2"><i data-lucide="calendar" class="w-5 h-5 text-[#4a3426]"></i> Select Date</h3>
+                    <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs text-[#8c7664] uppercase font-bold tracking-wider">
+                      <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-2" id="calendarGrid">
+                      <!-- Generated by JS -->
+                    </div>
+                  </div>
+                  <!-- Time Slots -->
+                  <div class="w-full md:w-48 flex flex-col">
+                    <h3 class="text-lg font-bold text-[#4a3426] mb-6 flex items-center gap-2"><i data-lucide="clock" class="w-5 h-5 text-[#4a3426]"></i> Time</h3>
+                    <div class="space-y-3 flex-1 overflow-y-auto pr-2 custom-scrollbar" id="timeSlots">
+                      <!-- Generated by JS -->
+                    </div>
+                  </div>
+                </div>
+                <!-- Action Bar -->
+                <div class="mt-8 pt-6 border-t border-[#eaddcf] flex justify-between items-center">
+                  <div class="text-[#8c7664] text-sm font-medium" id="bookingSummary">Please select a service, date, and time.</div>
+                  <button id="confirmBookingBtn" onclick="confirmBooking()" disabled class="flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all bg-[#f8f1e0] text-[#a89080] cursor-not-allowed">
+                    Confirm Booking <i data-lucide="arrow-right" class="w-[18px] h-[18px]"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== MENTORSHIP VIEW ========== -->
+      <div id="view-mentorship" class="view-section hidden">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 overflow-hidden">
+          <div class="text-center mb-16">
+            <h2 class="text-4xl font-black text-[#4a3426] sm:text-5xl tracking-tight animate-fadeInUp">Level Up Your Skills</h2>
+            <p class="mt-4 max-w-2xl mx-auto text-xl text-[#8c7664] font-medium anim-initial animate-fadeInUp delay-200">Personalized mentorship to help you break into the industry or master your craft.</p>
+          </div>
+          <div class="grid md:grid-cols-3 gap-8" id="mentorshipPlans">
+            <!-- Generated by JS -->
+          </div>
+          <div class="mt-24 bg-white rounded-2xl p-8 md:p-12 text-center shadow-lg border border-[#eaddcf] anim-initial animate-fadeIn delay-800">
+            <h3 class="text-2xl font-bold text-[#4a3426] mb-4">Not sure which plan is right for you?</h3>
+            <p class="text-[#8c7664] mb-8 max-w-2xl mx-auto font-medium">Book a free 15-minute discovery call to discuss your goals and see if we're a good fit.</p>
+            <button class="bg-[#cfa848] text-[#4a3426] px-8 py-3 rounded-xl font-bold hover:bg-[#b08e3b] transition-colors shadow-md">Schedule Free Call</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== SHOP VIEW ========== -->
+      <div id="view-shop" class="view-section hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 min-h-screen">
+          <!-- Categories View -->
+          <div id="shopCategories">
+            <div class="relative mb-12 py-10 -mx-4 px-8 overflow-hidden">
+              <div class="absolute inset-y-0 left-0 w-full md:w-3/4 bg-gradient-to-r from-[#e3d4b6] via-[#e3d4b6] to-transparent z-0 rounded-r-xl"></div>
+              <div class="relative z-10 pl-6 border-l-8 border-[#cfa848]">
+                <div class="flex flex-col md:flex-row md:items-end justify-between">
+                  <div>
+                    <h2 class="text-5xl font-black text-[#4a3426] tracking-tight mb-2 uppercase drop-shadow-sm">The Depot</h2>
+                    <p class="text-[#5d4231] text-xl font-medium">Select a department to browse assets.</p>
+                  </div>
+                  <div class="hidden md:block text-[#cfa848] font-black text-6xl opacity-20 transform translate-y-2">2024</div>
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="shopCatGrid">
+              <!-- Generated by JS -->
+            </div>
+          </div>
+          <!-- Products View -->
+          <div id="shopProducts" class="hidden">
+            <div class="flex items-center gap-6 border-b border-[#eaddcf] pb-6">
+              <button onclick="backToShopCategories()" class="group flex items-center gap-2 bg-[#4a3426] text-[#f8f1e0] px-6 py-3 rounded-lg font-bold hover:bg-[#cfa848] hover:text-[#4a3426] transition-all">
+                <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></i> Back to Depot
+              </button>
+              <div class="h-12 w-px bg-[#eaddcf]"></div>
+              <div>
+                <h2 class="text-3xl font-black text-[#4a3426] uppercase" id="shopCatTitle"></h2>
+                <p class="text-[#8c7664] font-medium" id="shopCatCount"></p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-8" id="shopProductGrid">
+              <!-- Generated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== CONTACT VIEW ========== -->
+      <div id="view-contact" class="view-section hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Contact Info -->
+            <div class="animate-slideInLeft">
+              <h2 class="text-4xl font-black text-[#4a3426] mb-6">Let's Create Something Amazing</h2>
+              <p class="text-xl text-[#8c7664] mb-10 leading-relaxed font-medium">Have a project in mind or just want to say hi? I'm always open to discussing new opportunities, collaborations, or answering any questions you might have about 3D art.</p>
+              <div class="space-y-6">
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-white border border-[#eaddcf] rounded-xl text-[#4a3426] shadow-sm"><i data-lucide="mail" class="w-6 h-6"></i></div>
+                  <div><h4 class="text-[#4a3426] font-bold">Email</h4><p class="text-[#8c7664]">contact@pierre-dubois.art</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-white border border-[#eaddcf] rounded-xl text-[#4a3426] shadow-sm"><i data-lucide="map-pin" class="w-6 h-6"></i></div>
+                  <div><h4 class="text-[#4a3426] font-bold">Location</h4><p class="text-[#8c7664]">Paris, France (Remote Available)</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-white border border-[#eaddcf] rounded-xl text-[#4a3426] shadow-sm"><i data-lucide="phone" class="w-6 h-6"></i></div>
+                  <div><h4 class="text-[#4a3426] font-bold">Phone</h4><p class="text-[#8c7664]">+33 6 12 34 56 78</p></div>
+                </div>
+              </div>
+              <div class="mt-12 flex gap-4">
+                <a href="#" class="p-3 bg-white border border-[#eaddcf] rounded-full text-[#8c7664] hover:bg-[#4a3426] hover:text-white transition-all shadow-sm"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                <a href="#" class="p-3 bg-white border border-[#eaddcf] rounded-full text-[#8c7664] hover:bg-[#4a3426] hover:text-white transition-all shadow-sm"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                <a href="#" class="p-3 bg-white border border-[#eaddcf] rounded-full text-[#8c7664] hover:bg-[#4a3426] hover:text-white transition-all shadow-sm"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+              </div>
+            </div>
+            <!-- Contact Form -->
+            <div class="bg-white rounded-2xl p-8 shadow-xl relative overflow-hidden border border-[#eaddcf] anim-initial animate-slideInRight delay-200">
+              <form class="space-y-6" onsubmit="event.preventDefault()">
+                <div class="grid grid-cols-2 gap-6">
+                  <div>
+                    <label for="firstName" class="block text-sm font-bold text-[#5d4231] mb-2">First Name</label>
+                    <input type="text" id="firstName" class="w-full bg-[#f8f1e0] border border-[#eaddcf] rounded-xl px-4 py-3 text-[#4a3426] focus:ring-2 focus:ring-[#cfa848] focus:border-transparent outline-none transition-all placeholder-[#a89080]" placeholder="John" />
+                  </div>
+                  <div>
+                    <label for="lastName" class="block text-sm font-bold text-[#5d4231] mb-2">Last Name</label>
+                    <input type="text" id="lastName" class="w-full bg-[#f8f1e0] border border-[#eaddcf] rounded-xl px-4 py-3 text-[#4a3426] focus:ring-2 focus:ring-[#cfa848] focus:border-transparent outline-none transition-all placeholder-[#a89080]" placeholder="Doe" />
+                  </div>
+                </div>
+                <div>
+                  <label for="email" class="block text-sm font-bold text-[#5d4231] mb-2">Email Address</label>
+                  <input type="email" id="email" class="w-full bg-[#f8f1e0] border border-[#eaddcf] rounded-xl px-4 py-3 text-[#4a3426] focus:ring-2 focus:ring-[#cfa848] focus:border-transparent outline-none transition-all placeholder-[#a89080]" placeholder="john@example.com" />
+                </div>
+                <div>
+                  <label for="subject" class="block text-sm font-bold text-[#5d4231] mb-2">Subject</label>
+                  <select id="subject" class="w-full bg-[#f8f1e0] border border-[#eaddcf] rounded-xl px-4 py-3 text-[#4a3426] focus:ring-2 focus:ring-[#cfa848] focus:border-transparent outline-none transition-all">
+                    <option>General Inquiry</option>
+                    <option>Project Proposal</option>
+                    <option>Mentorship</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="message" class="block text-sm font-bold text-[#5d4231] mb-2">Message</label>
+                  <textarea id="message" rows="4" class="w-full bg-[#f8f1e0] border border-[#eaddcf] rounded-xl px-4 py-3 text-[#4a3426] focus:ring-2 focus:ring-[#cfa848] focus:border-transparent outline-none transition-all resize-none placeholder-[#a89080]" placeholder="Tell me about your project..."></textarea>
+                </div>
+                <button type="button" id="contactSendBtn" onclick="sendContactForm()" class="w-full bg-[#4a3426] hover:bg-[#cfa848] hover:text-[#4a3426] text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg">
+                  Send Message <i data-lucide="send" class="w-[18px] h-[18px]"></i>
+                </button>
+              <div id="contactStatus" class="mt-4 text-center font-bold text-sm hidden"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="bg-[#3e2b20] border-t-[6px] border-[#cfa848] text-center py-10 relative overflow-hidden mt-auto">
+      <div class="relative max-w-7xl mx-auto px-4 flex flex-col items-center justify-center">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-[#cfa848] text-[8px] font-black">●</span>
+          <h3 class="text-[#cfa848] font-bold uppercase tracking-[0.2em] text-sm">Pierre Dubois</h3>
+          <span class="text-[#cfa848] text-[8px] font-black">●</span>
+        </div>
+        <p class="text-[#8c7664] text-xs font-medium tracking-wide">© 2024. 3D Digital Artist & Creator.</p>
+      </div>
+      <div class="absolute -bottom-8 -right-8 text-[#cfa848] opacity-20 pointer-events-none">
+        <svg width="150" height="150" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" /></svg>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== CV MODAL ==================== -->
+  <div id="cvModal" class="fixed inset-0 z-[100] hidden items-center justify-center" style="background:rgba(74,52,38,0.95);backdrop-filter:blur(12px);" onclick="closeCVModal()">
+    <div class="relative w-full max-w-5xl max-h-[92vh] mx-4 overflow-hidden rounded-[2rem] shadow-2xl animate-fadeInScale" onclick="event.stopPropagation()">
+      <!-- Close -->
+      <button onclick="closeCVModal()" class="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/10 hover:bg-[#cfa848] text-white hover:text-[#4a3426] transition-all backdrop-blur-sm shadow-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
+
+      <div class="overflow-y-auto max-h-[92vh] custom-scrollbar">
+        <!-- CV HEADER -->
+        <div class="relative bg-[#4a3426] px-8 md:px-16 pt-16 pb-12 overflow-hidden">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-[#cfa848]/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+          <div class="absolute bottom-0 left-0 w-40 h-40 bg-[#cfa848]/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+          <div class="relative flex flex-col md:flex-row items-center gap-8">
+            <div class="w-32 h-32 rounded-full border-4 border-[#cfa848] overflow-hidden shadow-2xl flex-shrink-0">
+              <img src="images/project_1773009877485.jpg" class="w-full h-full object-cover" alt="Pierre Dubois" />
+            </div>
+            <div class="text-center md:text-left">
+              <h2 class="text-4xl md:text-5xl font-black text-[#cfa848] tracking-tight mb-1">Pierre Dubois</h2>
+              <p class="text-[#eaddcf] font-bold uppercase tracking-[0.2em] text-sm mb-4">3D Digital Artist & Creator</p>
+              <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+                <span class="flex items-center gap-1.5 text-[#eaddcf]/70 text-xs"><i data-lucide="map-pin" class="w-3 h-3"></i> Paris, France</span>
+                <span class="flex items-center gap-1.5 text-[#eaddcf]/70 text-xs"><i data-lucide="mail" class="w-3 h-3"></i> contact@pierre-dubois.art</span>
+                <span class="flex items-center gap-1.5 text-[#eaddcf]/70 text-xs"><i data-lucide="globe" class="w-3 h-3"></i> pierre-dubois.art</span>
+              </div>
+            </div>
+            <div class="md:ml-auto flex-shrink-0">
+              <button onclick="downloadCV()" class="bg-[#cfa848] text-[#4a3426] px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-white transition-colors shadow-lg text-sm">
+                <i data-lucide="download" class="w-4 h-4"></i> Download PDF
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CV BODY -->
+        <div class="bg-[#f8f1e0] px-8 md:px-16 py-12">
+          <div class="grid md:grid-cols-3 gap-12">
+
+            <!-- LEFT COLUMN (2/3) -->
+            <div class="md:col-span-2 space-y-12">
+              <!-- ABOUT -->
+              <div>
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-10 h-10 bg-[#4a3426] rounded-lg flex items-center justify-center"><i data-lucide="user" class="w-5 h-5 text-[#cfa848]"></i></div>
+                  <h3 class="text-2xl font-black text-[#4a3426] uppercase tracking-wide">About</h3>
+                </div>
+                <p class="text-[#5d4231] leading-relaxed font-medium">Passionate 3D artist with 5+ years of experience in character design, environment art, and texturing. My journey began in traditional sculpture before transitioning to digital creation. I specialize in stylized and photorealistic 3D art for games and film, with a focus on storytelling through visual impact. Proficient in the full production pipeline from concept to game-ready assets.</p>
+              </div>
+
+              <!-- EXPERIENCE -->
+              <div>
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-10 h-10 bg-[#4a3426] rounded-lg flex items-center justify-center"><i data-lucide="briefcase" class="w-5 h-5 text-[#cfa848]"></i></div>
+                  <h3 class="text-2xl font-black text-[#4a3426] uppercase tracking-wide">Experience</h3>
+                </div>
+                <div>
+                  <div class="cv-timeline-item">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-1">
+                      <h4 class="text-lg font-bold text-[#4a3426]">Senior 3D Character Artist</h4>
+                      <span class="text-[#cfa848] font-bold text-sm">2022 — Present</span>
+                    </div>
+                    <p class="text-[#8c7664] font-bold text-sm mb-2">Ubisoft Paris — Paris, France</p>
+                    <ul class="text-[#5d4231] text-sm space-y-1 list-disc list-inside">
+                      <li>Lead character artist on AAA open-world RPG project</li>
+                      <li>Created 15+ unique hero characters from concept to final assets</li>
+                      <li>Mentored junior artists and established team art guidelines</li>
+                    </ul>
+                  </div>
+                  <div class="cv-timeline-item">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-1">
+                      <h4 class="text-lg font-bold text-[#4a3426]">3D Environment Artist</h4>
+                      <span class="text-[#cfa848] font-bold text-sm">2020 — 2022</span>
+                    </div>
+                    <p class="text-[#8c7664] font-bold text-sm mb-2">Dontnod Entertainment — Paris, France</p>
+                    <ul class="text-[#5d4231] text-sm space-y-1 list-disc list-inside">
+                      <li>Modeled and textured environments for narrative adventure games</li>
+                      <li>Built modular asset kits reducing production time by 30%</li>
+                      <li>Collaborated with level designers on world building</li>
+                    </ul>
+                  </div>
+                  <div class="cv-timeline-item">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-1">
+                      <h4 class="text-lg font-bold text-[#4a3426]">Freelance 3D Artist</h4>
+                      <span class="text-[#cfa848] font-bold text-sm">2019 — 2020</span>
+                    </div>
+                    <p class="text-[#8c7664] font-bold text-sm mb-2">Self-employed — Remote</p>
+                    <ul class="text-[#5d4231] text-sm space-y-1 list-disc list-inside">
+                      <li>Delivered 40+ projects for indie studios and advertising agencies</li>
+                      <li>Specialized in stylized characters and props for mobile games</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- EDUCATION -->
+              <div>
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-10 h-10 bg-[#4a3426] rounded-lg flex items-center justify-center"><i data-lucide="graduation-cap" class="w-5 h-5 text-[#cfa848]"></i></div>
+                  <h3 class="text-2xl font-black text-[#4a3426] uppercase tracking-wide">Education</h3>
+                </div>
+                <div>
+                  <div class="cv-timeline-item">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-1">
+                      <h4 class="text-lg font-bold text-[#4a3426]">Master in Digital Arts</h4>
+                      <span class="text-[#cfa848] font-bold text-sm">2017 — 2019</span>
+                    </div>
+                    <p class="text-[#8c7664] font-bold text-sm">Supinfocom Rubika — Valenciennes, France</p>
+                  </div>
+                  <div class="cv-timeline-item">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-1">
+                      <h4 class="text-lg font-bold text-[#4a3426]">Bachelor of Fine Arts — Sculpture</h4>
+                      <span class="text-[#cfa848] font-bold text-sm">2014 — 2017</span>
+                    </div>
+                    <p class="text-[#8c7664] font-bold text-sm">École des Beaux-Arts — Lyon, France</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT COLUMN (1/3) -->
+            <div class="space-y-10">
+              <!-- SKILLS -->
+              <div>
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-10 h-10 bg-[#4a3426] rounded-lg flex items-center justify-center"><i data-lucide="bar-chart-3" class="w-5 h-5 text-[#cfa848]"></i></div>
+                  <h3 class="text-xl font-black text-[#4a3426] uppercase tracking-wide">Skills</h3>
+                </div>
+                <div class="space-y-4">
+                  <div><div class="flex justify-between mb-1"><span class="text-sm font-bold text-[#4a3426]">Character Sculpting</span><span class="text-xs font-bold text-[#cfa848]">95%</span></div><div class="cv-skill-bar"><div class="cv-skill-bar-fill" style="width:95%"></div></div></div>
+                  <div><div class="flex justify-between mb-1"><span class="text-sm font-bold text-[#4a3426]">PBR Texturing</span><span class="text-xs font-bold text-[#cfa848]">90%</span></div><div class="cv-skill-bar"><div class="cv-skill-bar-fill" style="width:90%"></div></div></div>
+                  <div><div class="flex justify-between mb-1"><span class="text-sm font-bold text-[#4a3426]">Environment Art</span><span class="text-xs font-bold text-[#cfa848]">85%</span></div><div class="cv-skill-bar"><div class="cv-skill-bar-fill" style="width:85%"></div></div></div>
+                  <div><div class="flex justify-between mb-1"><span class="text-sm font-bold text-[#4a3426]">Retopology & UVs</span><span class="text-xs font-bold text-[#cfa848]">88%</span></div><div class="cv-skill-bar"><div class="cv-skill-bar-fill" style="width:88%"></div></div></div>
+                  <div><div class="flex justify-between mb-1"><span class="text-sm font-bold text-[#4a3426]">Lighting & Rendering</span><span class="text-xs font-bold text-[#cfa848]">80%</span></div><div class="cv-skill-bar"><div class="cv-skill-bar-fill" style="width:80%"></div></div></div>
+                  <div><div class="flex justify-between mb-1"><span class="text-sm font-bold text-[#4a3426]">Concept Art</span><span class="text-xs font-bold text-[#cfa848]">70%</span></div><div class="cv-skill-bar"><div class="cv-skill-bar-fill" style="width:70%"></div></div></div>
+                </div>
+              </div>
+
+              <!-- SOFTWARE -->
+              <div>
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-10 h-10 bg-[#4a3426] rounded-lg flex items-center justify-center"><i data-lucide="wrench" class="w-5 h-5 text-[#cfa848]"></i></div>
+                  <h3 class="text-xl font-black text-[#4a3426] uppercase tracking-wide">Software</h3>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                  <div class="cv-software-icon bg-white rounded-xl p-3 text-center shadow-sm border border-[#eaddcf]"><div class="text-lg font-black text-[#4a3426] mb-0.5">Zb</div><div class="text-[9px] text-[#8c7664] font-bold">ZBrush</div></div>
+                  <div class="cv-software-icon bg-white rounded-xl p-3 text-center shadow-sm border border-[#eaddcf]"><div class="text-lg font-black text-[#cfa848] mb-0.5">Bl</div><div class="text-[9px] text-[#8c7664] font-bold">Blender</div></div>
+                  <div class="cv-software-icon bg-white rounded-xl p-3 text-center shadow-sm border border-[#eaddcf]"><div class="text-lg font-black text-[#4a3426] mb-0.5">SP</div><div class="text-[9px] text-[#8c7664] font-bold">Substance</div></div>
+                  <div class="cv-software-icon bg-white rounded-xl p-3 text-center shadow-sm border border-[#eaddcf]"><div class="text-lg font-black text-[#cfa848] mb-0.5">UE</div><div class="text-[9px] text-[#8c7664] font-bold">Unreal 5</div></div>
+                  <div class="cv-software-icon bg-white rounded-xl p-3 text-center shadow-sm border border-[#eaddcf]"><div class="text-lg font-black text-[#4a3426] mb-0.5">Ma</div><div class="text-[9px] text-[#8c7664] font-bold">Maya</div></div>
+                  <div class="cv-software-icon bg-white rounded-xl p-3 text-center shadow-sm border border-[#eaddcf]"><div class="text-lg font-black text-[#cfa848] mb-0.5">Ps</div><div class="text-[9px] text-[#8c7664] font-bold">Photoshop</div></div>
+                  <div class="cv-software-icon bg-white rounded-xl p-3 text-center shadow-sm border border-[#eaddcf]"><div class="text-lg font-black text-[#4a3426] mb-0.5">Mt</div><div class="text-[9px] text-[#8c7664] font-bold">Marmoset</div></div>
+                  <div class="cv-software-icon bg-white rounded-xl p-3 text-center shadow-sm border border-[#eaddcf]"><div class="text-lg font-black text-[#cfa848] mb-0.5">Ri</div><div class="text-[9px] text-[#8c7664] font-bold">RizomUV</div></div>
+                  <div class="cv-software-icon bg-white rounded-xl p-3 text-center shadow-sm border border-[#eaddcf]"><div class="text-lg font-black text-[#4a3426] mb-0.5">Rc</div><div class="text-[9px] text-[#8c7664] font-bold">RealityCap</div></div>
+                </div>
+              </div>
+
+              <!-- LANGUAGES -->
+              <div>
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-10 h-10 bg-[#4a3426] rounded-lg flex items-center justify-center"><i data-lucide="languages" class="w-5 h-5 text-[#cfa848]"></i></div>
+                  <h3 class="text-xl font-black text-[#4a3426] uppercase tracking-wide">Languages</h3>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex justify-between items-center"><span class="text-sm font-bold text-[#4a3426]">French</span><div class="flex gap-1"><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span></div></div>
+                  <div class="flex justify-between items-center"><span class="text-sm font-bold text-[#4a3426]">English</span><div class="flex gap-1"><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#eaddcf]"></span></div></div>
+                  <div class="flex justify-between items-center"><span class="text-sm font-bold text-[#4a3426]">Spanish</span><div class="flex gap-1"><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#cfa848]"></span><span class="w-3 h-3 rounded-full bg-[#eaddcf]"></span><span class="w-3 h-3 rounded-full bg-[#eaddcf]"></span><span class="w-3 h-3 rounded-full bg-[#eaddcf]"></span></div></div>
+                </div>
+              </div>
+
+              <!-- INTERESTS -->
+              <div>
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 bg-[#4a3426] rounded-lg flex items-center justify-center"><i data-lucide="heart" class="w-5 h-5 text-[#cfa848]"></i></div>
+                  <h3 class="text-xl font-black text-[#4a3426] uppercase tracking-wide">Interests</h3>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <span class="px-3 py-1.5 bg-white rounded-full text-xs font-bold text-[#5d4231] border border-[#eaddcf]">Traditional Sculpture</span>
+                  <span class="px-3 py-1.5 bg-white rounded-full text-xs font-bold text-[#5d4231] border border-[#eaddcf]">Concept Art</span>
+                  <span class="px-3 py-1.5 bg-white rounded-full text-xs font-bold text-[#5d4231] border border-[#eaddcf]">Photography</span>
+                  <span class="px-3 py-1.5 bg-white rounded-full text-xs font-bold text-[#5d4231] border border-[#eaddcf]">VR/AR</span>
+                  <span class="px-3 py-1.5 bg-white rounded-full text-xs font-bold text-[#5d4231] border border-[#eaddcf]">Coffee</span>
+                  <span class="px-3 py-1.5 bg-white rounded-full text-xs font-bold text-[#5d4231] border border-[#eaddcf]">Game Jams</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DEMOREEL MODAL ==================== -->
+  <div id="demoreelModal" class="fixed inset-0 z-[100] hidden items-center justify-center" style="background:rgba(74,52,38,0.95);backdrop-filter:blur(12px);">
+    <div id="demoreelContent" class="relative bg-black rounded-2xl overflow-hidden shadow-2xl border-[6px] border-[#cfa848] w-full max-w-5xl aspect-video mx-4">
+      <div class="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-20 flex justify-between items-center opacity-0 hover:opacity-100 transition-opacity">
+        <h3 class="text-white font-medium ml-2">2024 Showreel - Pierre Dubois</h3>
+        <div class="flex gap-2">
+          <button onclick="toggleFullscreenDemoreel()" class="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm"><i data-lucide="maximize" class="w-5 h-5" id="fullscreenIcon"></i></button>
+          <button onclick="closeDemoreel()" class="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+      </div>
+      <div class="w-full h-full flex items-center justify-center bg-[#1c1917]" id="videoContainer">
+        <!-- iframe injected on open -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PROJECT MODAL ==================== -->
+  <div id="projectModal" class="fixed inset-0 z-[60] hidden items-center justify-center">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-[#4a3426]/90 backdrop-blur-md" onclick="closeProjectModal()"></div>
+
+    <!-- SPLIT VIEW -->
+    <div id="modalSplit" class="relative w-full max-w-6xl h-[90vh] bg-white rounded-[2rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/50 z-[70] mx-4 animate-fadeInScale">
+      <!-- LEFT: Image Area -->
+      <div class="w-full md:w-[65%] h-[40vh] md:h-full bg-[#1a1512] relative group flex items-center justify-center overflow-hidden img-area">
+        <img id="modalMainImage" src="" alt="" class="absolute w-full h-full object-contain" />
+        <!-- Open Gallery overlay -->
+        <div class="absolute inset-0 z-10 flex items-center justify-center bg-black/20 pointer-events-none open-gallery-btn">
+          <button onclick="openModalGallery()" class="bg-white/90 text-[#4a3426] px-8 py-4 rounded-full font-black uppercase tracking-widest shadow-xl transform scale-90 hover:scale-100 transition-all pointer-events-auto flex items-center gap-2">
+            <i data-lucide="grid-3x3" class="w-[18px] h-[18px]"></i> Open Gallery
+          </button>
+        </div>
+        <!-- Thumbnail strip -->
+        <div class="absolute bottom-4 left-4 right-4 z-20">
+          <div class="bg-black/60 backdrop-blur-md p-2 rounded-xl border border-white/10 overflow-x-auto flex gap-2 custom-scrollbar justify-center" id="modalThumbnails">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT: Content -->
+      <div class="w-full md:w-[35%] flex flex-col bg-white h-auto md:h-full overflow-hidden relative">
+        <div class="absolute top-4 right-4 z-30">
+          <button onclick="closeProjectModal()" class="p-2 rounded-full bg-[#f8f1e0] hover:bg-[#cfa848] text-[#4a3426] shadow-md transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-8 py-12 custom-scrollbar" id="modalContent">
+          <!-- Generated by JS -->
+        </div>
+        <div class="p-6 border-t border-[#eaddcf] bg-white">
+          <button onclick="navigateTo('contact');closeProjectModal();" class="w-full bg-[#4a3426] text-[#cfa848] font-black uppercase tracking-widest py-4 rounded-xl hover:bg-[#cfa848] hover:text-[#4a3426] transition-all shadow-lg">Contact About This</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GALLERY VIEW -->
+    <div id="modalGallery" class="fixed inset-0 z-[80] bg-[#1a1512] overflow-y-auto hidden">
+      <div class="sticky top-0 z-50 bg-[#1a1512]/80 backdrop-blur-md p-6 flex justify-between items-center border-b border-white/10">
+        <div class="text-white">
+          <h3 class="font-bold text-xl" id="galleryTitle"></h3>
+          <p class="text-white/50 text-sm">Full Gallery View</p>
+        </div>
+        <button onclick="closeModalGallery()" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full font-bold transition-colors flex items-center gap-2">
+          <i data-lucide="x" class="w-[18px] h-[18px]"></i> Close Gallery
+        </button>
+      </div>
+      <div class="p-8 max-w-[1920px] mx-auto">
+        <div class="masonry" id="galleryGrid">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- LIGHTBOX VIEW -->
+    <div id="modalLightbox" class="fixed inset-0 z-[90] bg-black hidden items-center justify-center p-4 md:p-12" onclick="closeLightbox()">
+      <div class="absolute top-4 right-4 z-50 flex items-center gap-2" onclick="event.stopPropagation()">
+        <button onclick="closeLightbox()" class="p-3 bg-white/10 hover:bg-white/20 rounded-full text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+      <button onclick="event.stopPropagation();lightboxPrev();" class="absolute left-4 p-4 text-white hover:text-[#cfa848] z-50 hidden md:block"><i data-lucide="chevron-left" class="w-12 h-12"></i></button>
+      <div class="relative group max-w-full max-h-full flex items-center justify-center lightbox-group" onclick="event.stopPropagation()">
+        <img id="lightboxImage" src="" class="max-w-full max-h-[85vh] object-contain shadow-2xl" />
+        <!-- Caption -->
+        <div class="absolute bottom-4 left-4 right-4 md:left-8 md:right-auto md:max-w-lg lightbox-caption">
+          <div class="bg-[#4a3426]/95 backdrop-blur-md rounded-xl border-l-4 border-[#cfa848] shadow-2xl overflow-hidden p-6">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="text-[#cfa848] font-black uppercase tracking-widest text-xs" id="lightboxCounter"></span>
+              <div class="h-px flex-1 bg-white/10"></div>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-[#f8f1e0] mb-2 leading-tight" id="lightboxTitle"></h3>
+            <p class="text-[#eaddcf] opacity-90 text-sm leading-relaxed line-clamp-3 font-medium" id="lightboxDesc"></p>
+          </div>
+        </div>
+      </div>
+      <button onclick="event.stopPropagation();lightboxNext();" class="absolute right-4 p-4 text-white hover:text-[#cfa848] z-50 hidden md:block"><i data-lucide="chevron-right" class="w-12 h-12"></i></button>
+    </div>
+  </div>
+
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+  // ================================
+  // DATA
+  // ================================
+  const PORTFOLIO_TAGS = ['ASSETS', 'CHARACTERS', 'TEXTURING', 'PHOTOREALISTE', 'STYLISÉ', 'ENVIRONNEMENT'];
+
+  const GRID_SCALE = 'G';
+  const PROJECTS = [
+    { id:'1772236336336', title:'', image:'images/project_1772236336.jpg', images:[], tags:[], description:'', year:'2026', gridSize:'S', posX:0, posY:0, sizeW:32, sizeH:16 },
+    { id:'2', title:'Ancient Ruins', image:'images/project_1772323392436.png', images:['images/project_1774052205287.png','images/project_1774052205308.png','images/project_1774052205318.png','images/project_1774052205339.png','images/project_1774052205363.png','images/project_1774052205382.png'], imageCaptions:['','','','','',''], tags:['ENVIRONNEMENT','PHOTOREALISTE'], description:'Photogrammetry based ancient ruins environment.', tools:['Unreal Engine 5','RealityCapture','Maya'], year:'2024', panX:3, panY:-4, gridSize:'S', posX:34, posY:0, sizeW:10, sizeH:16 },
+    { id:'5', title:'Rusty Robot', image:'images/project_1772243320335.jpg', images:['images/local_1774051855058.jpg'], imageCaptions:[''], tags:['CHARACTERS','TEXTURING','PHOTOREALISTE'], description:'Advanced material study on metal weathering.', tools:['Substance Designer','ZBrush'], year:'2023', panX:7, panY:4, gridSize:'S', posX:46, posY:0, sizeW:26, sizeH:16 },
+    { id:'3', title:'Sci-Fi Crate', image:'images/project_1772323377177.jpg', images:['images/local_1774051855074.jpg','images/local_1774051854153.jpg'], imageCaptions:['',''], tags:['ASSETS','TEXTURING','PHOTOREALISTE'], description:'High fidelity sci-fi crate asset.', tools:['Maya','Substance Painter','Marmoset Toolbag'], year:'2023', zoom:1.72, panX:-6, panY:31, gridSize:'S', posX:74, posY:0, sizeW:26, sizeH:16 },
+    { id:'4', title:'Fantasy Forest', image:'images/local_1774051855629.jpg', images:['images/local_1774051855799.jpg','images/local_1774051854440.jpg'], tags:['ENVIRONNEMENT','STYLISÉ'], description:'Hand-painted textures for a fantasy environment.', tools:['Blender','Photoshop','Unity'], year:'2022', gridSize:'S', posX:0, posY:18, sizeW:10, sizeH:16 },
+    { id:'6', title:'Modular Building Set', image:'images/local_1774051855079.jpg', images:['images/local_1774051854151.jpg','images/local_1774051855418.jpg'], tags:['ASSETS','ENVIRONNEMENT'], description:'Modular kit for city building.', tools:['Blender','Unreal Engine 4'], year:'2022', gridSize:'S', posX:12, posY:18, sizeW:22, sizeH:16 },
+    { id:'8', title:'Alien Flora', image:'images/project_1772243297662.jpg', images:['images/local_1774051854751.jpg','images/local_1774051855653.jpg','images/local_1774051854468.jpg'], imageCaptions:['','',''], tags:['ASSETS','TEXTURING'], description:'Exotic plant assets for a sci-fi game.', tools:['ZBrush','SpeedTree'], year:'2024', gridSize:'S', posX:36, posY:18, sizeW:26, sizeH:16 },
+    { id:'7', title:'Neon City', image:'images/local_1774051854941.jpg', images:['images/local_1774051854658.jpg','images/local_1774051854456.jpg'], tags:['ENVIRONNEMENT','STYLISÉ'], description:'Cyberpunk city block with neon aesthetic.', tools:['Blender','Unity'], year:'2023', gridSize:'S', posX:64, posY:18, sizeW:36, sizeH:16 }
+  ];
+
+  const SERVICES = [
+    { id:'consultation', title:'1-on-1 Consultation', description:'Direct video call to discuss your portfolio, career advice, or specific technical challenges.', price:'€100', features:['1 Hour Session','Portfolio Review','Technical Q&A','Recording Provided'] },
+    { id:'freelance', title:'Freelance 3D Art', description:'Available for contract work on characters, props, or environments for your game or film.', price:'Custom', features:['High-poly Sculpting','Retopology & UVs','PBR Texturing','Game-ready Optimization'] },
+    { id:'mentorship', title:'Monthly Mentorship', description:'Intensive month-long program to level up your skills with weekly assignments and feedback.', price:'€400/mo', features:['Weekly Calls','Discord Support','Project File Reviews','Career Planning'] }
+  ];
+
+  const MENTORSHIP_PLANS = [
+    { id:'beginner', title:'Beginner 3D', price:'€250/mo', features:['Weekly 1hr video call','Portfolio review','Assignment feedback','Access to Discord community'] },
+    { id:'pro', title:'Professional Track', price:'€500/mo', recommended:true, features:['Bi-weekly 1hr video calls','In-depth project breakdown','Career guidance & resume review','Direct WhatsApp access','All asset packs included'] },
+    { id:'single', title:'Single Session', price:'€80', features:['One-time 1.5hr deep dive','Specific problem solving','Portfolio critique','Recording of the session'] }
+  ];
+
+  const SHOP_CATEGORIES = [
+    { id:'tuto', title:'Tutorials & PDFs', subtitle:'Learn & Master', icon:'book-open', description:'Deep dives into workflow and techniques.', image:'images/local_1774051855731.jpg' },
+    { id:'hardsurface', title:'Hard Surface', subtitle:'Mechs & Vehicles', icon:'box', description:'Kitbash sets and game-ready mechanical assets.', image:'images/local_1774051855253.jpg' },
+    { id:'organic', title:'Organic Assets', subtitle:'Nature & Anatomy', icon:'leaf', description:'Creature bases, foliage, and anatomical studies.', image:'images/local_1774051855387.jpg' },
+    { id:'textures', title:'Textures', subtitle:'Surface Details', icon:'image', description:'High-res scans and imperfections.', image:'images/local_1774051855387.jpg' },
+    { id:'materials', title:'Materials', subtitle:'Smart Shaders', icon:'paintbrush', description:'Procedural materials for Substance & Blender.', image:'images/local_1774051855076.jpg' }
+  ];
+
+  const SHOP_ITEMS = [
+    { id:'101', title:'Environment Art Masterclass', price:49.00, image:'images/local_1774051854439.jpg', category:'tuto', fileType:'.PDF' },
+    { id:'102', title:'ZBrush Sculpting Guide', price:29.00, image:'images/local_1774051855654.jpg', category:'tuto', fileType:'.PDF' },
+    { id:'201', title:'Sci-Fi Kitbash Vol.1', price:35.00, image:'images/local_1774051854773.jpg', category:'hardsurface', fileType:'.BLEND' },
+    { id:'202', title:'Cyberpunk Vehicles', price:45.00, image:'images/local_1774051855516.jpg', category:'hardsurface', fileType:'.FBX' },
+    { id:'301', title:'Stylized Character Base', price:10.00, image:'images/local_1774051854151.jpg', category:'organic', fileType:'.FBX' },
+    { id:'302', title:'Creature Anatomy Pack', price:25.00, image:'images/local_1774051854765.jpg', category:'organic', fileType:'.ZTL' },
+    { id:'401', title:'4K Concrete Textures', price:15.00, image:'images/local_1774051855543.jpg', category:'textures', fileType:'.PNG' },
+    { id:'402', title:'Wood Imperfections', price:12.00, image:'images/local_1774051854153.jpg', category:'textures', fileType:'.TIFF' },
+    { id:'501', title:'Stylized Smart Materials', price:20.00, image:'images/local_1774051854383.jpg', category:'materials', fileType:'.SPSM' },
+    { id:'502', title:'Procedural Rust', price:18.00, image:'images/local_1774051855100.jpg', category:'materials', fileType:'.SBSAR' }
+  ];
+
+  const TIME_SLOTS = ['10:00 AM','11:00 AM','02:00 PM','03:30 PM','05:00 PM'];
+
+  // ================================
+  // STATE
+  // ================================
+  let currentView = 'portfolio';
+  let selectedTags = [];
+  let selectedService = null;
+  let selectedDate = null;
+  let selectedTime = null;
+  let currentProject = null;
+  let currentImageIndex = 0;
+  let isDeemoreelFullscreen = false;
+
+  // Booked slots storage (simulates a database - persisted in localStorage)
+  let bookedSlots = JSON.parse(localStorage.getItem('bookedSlots') || '{}'); // { 'YYYY-MM-DD': ['10:00 AM', ...] }
+
+  // Google Calendar config
+  const OWNER_EMAIL = 'pierre.dubois3d@gmail.com'; // Replace with your Gmail
+
+  // ================================
+  // CV MODAL
+  // ================================
+  function openCVModal() {
+    const modal = document.getElementById('cvModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+    lucide.createIcons();
+  }
+
+  function closeCVModal() {
+    const modal = document.getElementById('cvModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  function downloadCV() {
+    alert('In production, this would trigger a PDF download of the CV.');
+  }
+
+  // ================================
+  // NAVIGATION
+  // ================================
+  function navigateTo(view) {
+    currentView = view;
+    document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+    const target = document.getElementById('view-' + view);
+    if (target) {
+      target.classList.remove('hidden');
+      target.style.animation = 'none';
+      target.offsetHeight; // reflow
+      target.style.animation = '';
+    }
+
+    // Update nav buttons
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.classList.remove('active-nav');
+      if (btn.dataset.nav === view) btn.classList.add('active-nav');
+    });
+    document.querySelectorAll('.nav-btn-m').forEach(btn => {
+      btn.classList.remove('active-nav-m');
+      if (btn.dataset.nav === view) btn.classList.add('active-nav-m');
+    });
+
+    // Reset shop to categories
+    if (view === 'shop') backToShopCategories();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    lucide.createIcons();
+  }
+
+  // ================================
+  // DEMOREEL
+  // ================================
+  function openDemoreel() {
+    const modal = document.getElementById('demoreelModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('videoContainer').innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/ScMzIvxBSi4?autoplay=1" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen class="w-full h-full"></iframe>';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDemoreel() {
+    const modal = document.getElementById('demoreelModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('videoContainer').innerHTML = '';
+    document.body.style.overflow = '';
+    isDeemoreelFullscreen = false;
+    const content = document.getElementById('demoreelContent');
+    content.className = 'relative bg-black rounded-2xl overflow-hidden shadow-2xl border-[6px] border-[#cfa848] w-full max-w-5xl aspect-video mx-4';
+  }
+
+  function toggleFullscreenDemoreel() {
+    const content = document.getElementById('demoreelContent');
+    isDeemoreelFullscreen = !isDeemoreelFullscreen;
+    if (isDeemoreelFullscreen) {
+      content.className = 'relative bg-black overflow-hidden shadow-2xl w-full h-full';
+    } else {
+      content.className = 'relative bg-black rounded-2xl overflow-hidden shadow-2xl border-[6px] border-[#cfa848] w-full max-w-5xl aspect-video mx-4';
+    }
+  }
+
+  // ================================
+  // PORTFOLIO FILTERING
+  // ================================
+  function renderTagFilters() {
+    const container = document.getElementById('tagFilters');
+    container.innerHTML = PORTFOLIO_TAGS.map(tag => {
+      const active = selectedTags.includes(tag);
+      return `<button onclick="toggleTag('${tag}')" class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wide transition-all duration-300 border-2 shadow-sm ${
+        active ? 'bg-[#cfa848] border-[#cfa848] text-[#4a3426]' : 'bg-[#4a3426] border-[#4a3426] text-[#f8f1e0] hover:bg-[#5d4231]'
+      }">${tag}</button>`;
+    }).join('');
+    
+    const clearBtn = document.getElementById('clearFiltersBtn');
+    if (selectedTags.length > 0) {
+      clearBtn.classList.remove('hidden');
+      clearBtn.classList.add('flex');
+    } else {
+      clearBtn.classList.add('hidden');
+      clearBtn.classList.remove('flex');
+    }
+  }
+
+  function toggleTag(tag) {
+    if (selectedTags.includes(tag)) {
+      selectedTags = selectedTags.filter(t => t !== tag);
+    } else {
+      selectedTags.push(tag);
+    }
+    renderTagFilters();
+    renderPortfolioGrid();
+    lucide.createIcons();
+  }
+
+  function clearFilters() {
+    selectedTags = [];
+    renderTagFilters();
+    renderPortfolioGrid();
+    lucide.createIcons();
+  }
+
+  function renderPortfolioGrid() {
+    const grid = document.getElementById('portfolioGrid');
+    /* Apply scale class */
+    var scale = (typeof GRID_SCALE !== 'undefined') ? GRID_SCALE : 'G';
+    grid.className = 'portfolio-wrapper scale-' + scale;
+    const filtered = selectedTags.length === 0 ? PROJECTS : PROJECTS.filter(p => selectedTags.every(t => p.tags.includes(t)));
+    
+    if (filtered.length === 0) {
+      grid.innerHTML = '';
+      grid.style.height = '';
+      document.getElementById('noResults').classList.remove('hidden');
+    } else {
+      document.getElementById('noResults').classList.add('hidden');
+
+      /* Size presets (% of container width) — must match editor PRESETS */
+      const SIZES = { S:{w:16,h:16}, H:{w:32,h:16}, V:{w:16,h:32}, L:{w:32,h:32}, M:{w:32,h:16} };
+
+      /* Build positioned list — migrate old grid format when needed */
+      const positioned = filtered.map((project, idx) => {
+        let posX = project.posX, posY = project.posY,
+            sizeW = project.sizeW, sizeH = project.sizeH;
+        if (posX === undefined || posY === undefined) {
+          const sz = SIZES[project.gridSize] || SIZES.S;
+          sizeW = sizeW || (project.gridW ? project.gridW * 16.67 : sz.w);
+          sizeH = sizeH || (project.gridH ? project.gridH * 16.67 : sz.h);
+          if (project.gridCol !== undefined && project.gridRow !== undefined) {
+            posX = (project.gridCol - 1) * 16.67;
+            posY = (project.gridRow - 1) * 16.67;
+          } else {
+            posX = (idx % 6) * 16.67;
+            posY = Math.floor(idx / 6) * (sz.h + 2);
+          }
+        }
+        return Object.assign({}, project, {
+          posX: posX, posY: posY,
+          sizeW: sizeW || 16, sizeH: sizeH || 16
+        });
+      });
+
+      /* Container height = bottom of lowest card + small margin */
+      let maxBottom = 0;
+      positioned.forEach(function(p) {
+        const b = p.posY + p.sizeH;
+        if (b > maxBottom) maxBottom = b;
+      });
+      grid.style.height = (maxBottom + 2) + 'cqw';
+
+      grid.innerHTML = positioned.map(function(p) {
+        const imgCount = p.images ? p.images.length : 1;
+        return '<div class="portfolio-card group cursor-pointer rounded-2xl shadow-md hover:shadow-2xl hover:shadow-[#cfa848]/30 transition-all duration-500 border border-[#eaddcf] hover:border-[#cfa848] animate-fadeInScale"'
+          + ' style="left:' + p.posX + 'cqw;top:' + p.posY + 'cqw;width:' + p.sizeW + 'cqw;height:' + p.sizeH + 'cqw;"'
+          + ' onclick="openProjectModal(\'' + p.id + '\')">'
+          + '<div class="relative overflow-hidden w-full h-full rounded-2xl">'
+          + '<img src="' + p.image + '" alt="' + p.title + '" class="w-full h-full object-cover" loading="lazy"'
+          + ' style="object-position:calc(50% + ' + (p.panX||0) + 'px) calc(50% + ' + (p.panY||0) + 'px);transform:scale(' + (p.zoom||1) + ');transform-origin:center center;" />'
+          + '<div class="absolute inset-0 bg-gradient-to-t from-[#4a3426]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>'
+          + '<div class="card-overlay absolute bottom-0 left-0 right-0 bg-white px-3 py-2 border-t border-[#eaddcf]">'
+          + '<div class="flex justify-between items-start mb-1">'
+          + '<h3 class="font-black text-[#4a3426] leading-tight max-w-[75%]">' + p.title + '</h3>'
+          + '<div class="flex items-center gap-1 text-[#cfa848] bg-[#f8f1e0] px-1.5 py-0.5 rounded-full border border-[#eaddcf] shadow-sm">'
+          + '<i data-lucide="layers" class="w-3 h-3"></i>'
+          + '<span class="text-[10px] font-black">' + imgCount + '</span>'
+          + '</div></div>'
+          + '<p class="text-[#8c7664] font-medium mb-1 line-clamp-1 leading-relaxed">' + p.description + '</p>'
+          + '<div class="flex flex-wrap gap-1">'
+          + p.tags.slice(0,3).map(function(tag){ return '<span class="tag px-2 py-0.5 rounded-full border border-[#cfa848] text-[#4a3426] bg-[#cfa848]/10 font-bold uppercase tracking-wider">' + tag + '</span>'; }).join('')
+          + '</div></div></div></div>';
+      }).join('');
+    }
+    lucide.createIcons();
+  }
+
+  // ================================
+  // PROJECT MODAL
+  // ================================
+  function getMediaType(url) {
+    if (/youtube\.com|youtu\.be/i.test(url)) return 'youtube';
+    if (/vimeo\.com/i.test(url)) return 'vimeo';
+    if (/\.(mp4|webm|mov|avi|mkv)$/i.test(url)) return 'video';
+    return 'image';
+  }
+  function getYoutubeId(url) {
+    const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|.*&v=))([^&?#]+)/);
+    return m ? m[1] : '';
+  }
+  function getVimeoId(url) {
+    const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    return m ? m[1] : '';
+  }
+  function buildMediaArray(p) {
+    const media = [];
+    const images = p.images && p.images.length > 0 ? p.images : [p.image];
+    images.forEach((url, idx) => {
+      media.push({ url, type: 'image', caption: (p.imageCaptions && p.imageCaptions[idx]) || '' });
+    });
+    if (p.videos && p.videos.length > 0) {
+      p.videos.forEach((url, idx) => {
+        const t = getMediaType(url);
+        media.push({ url, type: t === 'image' ? 'video' : t, caption: (p.videoCaptions && p.videoCaptions[idx]) || '' });
+      });
+    }
+    return media;
+  }
+
+  function openProjectModal(id) {
+    currentProject = PROJECTS.find(p => p.id === id);
+    if (!currentProject) return;
+    currentImageIndex = 0;
+    currentProject._media = buildMediaArray(currentProject);
+
+    const media = currentProject._media;
+    const first = media[0];
+    
+    // Set main image/video
+    const mainImg = document.getElementById('modalMainImage');
+    if (first.type === 'image') {
+      mainImg.src = first.url;
+      mainImg.style.display = '';
+    } else {
+      mainImg.src = first.type === 'youtube' ? 'https://img.youtube.com/vi/'+getYoutubeId(first.url)+'/maxresdefault.jpg' : first.url;
+      mainImg.style.display = '';
+    }
+    
+    // Set thumbnails (images + videos)
+    document.getElementById('modalThumbnails').innerHTML = media.map((m, idx) => {
+      let thumbContent;
+      if (m.type === 'youtube') {
+        thumbContent = `<img src="https://img.youtube.com/vi/${getYoutubeId(m.url)}/mqdefault.jpg" class="w-full h-full object-cover" /><div class="absolute inset-0 flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-4 h-4 fill-white drop-shadow-lg"><polygon points="8,5 19,12 8,19"/></svg></div>`;
+      } else if (m.type === 'vimeo' || m.type === 'video') {
+        thumbContent = `<div class="w-full h-full bg-black/50 flex items-center justify-center"><svg viewBox="0 0 24 24" class="w-4 h-4 fill-white"><polygon points="8,5 19,12 8,19"/></svg></div>`;
+      } else {
+        thumbContent = `<img src="${m.url}" class="w-full h-full object-cover" />`;
+      }
+      return `<button onclick="event.stopPropagation();jumpToImage(${idx})" class="relative w-16 h-12 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${idx === 0 ? 'border-[#cfa848] opacity-100 scale-105' : 'border-transparent opacity-50 hover:opacity-80'}">
+        ${thumbContent}
+      </button>`;
+    }).join('');
+
+    // Set content
+    const p = currentProject;
+    let html = `<h2 class="text-4xl font-black text-[#4a3426] mb-4 leading-tight">${p.title}</h2>
+      <p class="text-[#8c7664] font-medium leading-relaxed mb-8">${p.longDescription || p.description}</p>
+      <div class="flex flex-wrap gap-2 mb-8">${p.tags.map(tag => `<span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-[#8c7664] text-[#5d4231] bg-transparent">${tag}</span>`).join('')}</div>
+      <div class="w-full h-px bg-[#eaddcf] mb-8"></div>
+      <div class="space-y-6">`;
+    if (p.tools) {
+      html += `<div><div class="flex items-center gap-2 mb-2 text-[#cfa848]"><i data-lucide="wrench" class="w-4 h-4"></i><span class="text-xs font-bold uppercase tracking-wider text-[#4a3426]">Tools Used</span></div>
+        <div class="flex flex-wrap gap-2">${p.tools.map(t => `<span class="text-sm text-[#5d4231] bg-[#f8f1e0] px-3 py-1.5 rounded-lg font-bold">${t}</span>`).join('')}</div></div>`;
+    }
+    html += `<div class="grid grid-cols-2 gap-4">`;
+    if (p.year) html += `<div><div class="flex items-center gap-2 mb-1 text-[#cfa848]"><i data-lucide="calendar" class="w-4 h-4"></i><span class="text-xs font-bold uppercase tracking-wider text-[#4a3426]">Year</span></div><span class="text-[#4a3426] font-bold">${p.year}</span></div>`;
+    if (p.client) html += `<div><div class="flex items-center gap-2 mb-1 text-[#cfa848]"><i data-lucide="user" class="w-4 h-4"></i><span class="text-xs font-bold uppercase tracking-wider text-[#4a3426]">Client</span></div><span class="text-[#4a3426] font-bold">${p.client}</span></div>`;
+    html += '</div></div>';
+    document.getElementById('modalContent').innerHTML = html;
+
+    // Show modal
+    const modal = document.getElementById('projectModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('modalSplit').classList.remove('hidden');
+    document.getElementById('modalGallery').classList.add('hidden');
+    document.getElementById('modalLightbox').classList.add('hidden');
+    document.getElementById('modalLightbox').classList.remove('flex');
+    document.body.style.overflow = 'hidden';
+    lucide.createIcons();
+  }
+
+  function jumpToImage(idx) {
+    if (!currentProject) return;
+    currentImageIndex = idx;
+    const media = currentProject._media || [];
+    const m = media[idx];
+    if (!m) return;
+    const mainImg = document.getElementById('modalMainImage');
+    if (m.type === 'youtube') {
+      mainImg.src = 'https://img.youtube.com/vi/'+getYoutubeId(m.url)+'/maxresdefault.jpg';
+    } else {
+      mainImg.src = m.url;
+    }
+    // Update thumbnail highlights
+    const thumbs = document.getElementById('modalThumbnails').querySelectorAll('button');
+    thumbs.forEach((t, i) => {
+      if (i === idx) { t.className = 'relative w-16 h-12 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all border-[#cfa848] opacity-100 scale-105'; }
+      else { t.className = 'relative w-16 h-12 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all border-transparent opacity-50 hover:opacity-80'; }
+    });
+  }
+
+  function closeProjectModal() {
+    const modal = document.getElementById('projectModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('modalGallery').classList.add('hidden');
+    document.getElementById('modalLightbox').classList.add('hidden');
+    document.getElementById('modalLightbox').classList.remove('flex');
+    document.body.style.overflow = '';
+    currentProject = null;
+  }
+
+  function openModalGallery() {
+    if (!currentProject) return;
+    const media = currentProject._media || buildMediaArray(currentProject);
+    document.getElementById('galleryTitle').textContent = currentProject.title;
+    document.getElementById('galleryGrid').innerHTML = media.map((m, idx) => {
+      if (m.type === 'youtube') {
+        const ytId = getYoutubeId(m.url);
+        return `<div class="gallery-item relative group cursor-pointer hover:z-50" onclick="openLightbox(${idx})">
+          <div class="gallery-img-wrap gallery-video-wrap rounded-lg overflow-hidden border border-white/10 shadow-lg">
+            <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" class="w-full h-auto block" loading="lazy" />
+            <div class="video-play-overlay"><svg viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19"/></svg></div>
+            <div class="gallery-overlay absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-4">
+              <p class="text-[#cfa848] font-bold text-xs uppercase tracking-wider mb-1">${m.caption || 'Video #'+(idx+1)}</p>
+            </div>
+          </div>
+        </div>`;
+      } else if (m.type === 'vimeo' || m.type === 'video') {
+        let thumbHtml = m.type === 'video'
+          ? `<video src="${m.url}" class="w-full h-auto block" muted preload="metadata"></video>`
+          : `<div class="w-full h-32 bg-black flex items-center justify-center text-white/50">Vimeo</div>`;
+        return `<div class="gallery-item relative group cursor-pointer hover:z-50" onclick="openLightbox(${idx})">
+          <div class="gallery-img-wrap gallery-video-wrap rounded-lg overflow-hidden border border-white/10 shadow-lg">
+            ${thumbHtml}
+            <div class="video-play-overlay"><svg viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19"/></svg></div>
+            <div class="gallery-overlay absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-4">
+              <p class="text-[#cfa848] font-bold text-xs uppercase tracking-wider mb-1">${m.caption || 'Video #'+(idx+1)}</p>
+            </div>
+          </div>
+        </div>`;
+      } else {
+        return `<div class="gallery-item relative group cursor-pointer hover:z-50" onclick="openLightbox(${idx})">
+          <div class="gallery-img-wrap rounded-lg overflow-hidden border border-white/10 shadow-lg">
+            <img src="${m.url}" class="w-full h-auto block" loading="lazy" />
+            <div class="gallery-overlay absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/80 to-transparent p-4">
+              <p class="text-[#cfa848] font-bold text-xs uppercase tracking-wider mb-1">${m.caption || 'Asset #'+(idx+1)}</p>
+            </div>
+          </div>
+        </div>`;
+      }
+    }).join('');
+    document.getElementById('modalSplit').classList.add('hidden');
+    document.getElementById('modalGallery').classList.remove('hidden');
+    lucide.createIcons();
+  }
+
+  function closeModalGallery() {
+    document.getElementById('modalGallery').classList.add('hidden');
+    document.getElementById('modalSplit').classList.remove('hidden');
+  }
+
+  function openLightbox(idx) {
+    if (!currentProject) return;
+    currentImageIndex = idx;
+    updateLightbox();
+    document.getElementById('modalGallery').classList.add('hidden');
+    const lb = document.getElementById('modalLightbox');
+    lb.classList.remove('hidden');
+    lb.classList.add('flex');
+  }
+
+  function updateLightbox() {
+    const media = currentProject._media || [];
+    const m = media[currentImageIndex];
+    if (!m) return;
+    const imgEl = document.getElementById('lightboxImage');
+    // Remove any existing video container
+    const existingVideo = document.getElementById('lightboxVideo');
+    if (existingVideo) existingVideo.remove();
+    
+    if (m.type === 'youtube') {
+      imgEl.style.display = 'none';
+      const container = document.createElement('div');
+      container.id = 'lightboxVideo';
+      container.className = 'modal-video-container';
+      container.innerHTML = `<iframe src="https://www.youtube.com/embed/${getYoutubeId(m.url)}?autoplay=1&rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+      imgEl.parentElement.insertBefore(container, imgEl);
+    } else if (m.type === 'vimeo') {
+      imgEl.style.display = 'none';
+      const container = document.createElement('div');
+      container.id = 'lightboxVideo';
+      container.className = 'modal-video-container';
+      container.innerHTML = `<iframe src="https://player.vimeo.com/video/${getVimeoId(m.url)}?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+      imgEl.parentElement.insertBefore(container, imgEl);
+    } else if (m.type === 'video') {
+      imgEl.style.display = 'none';
+      const container = document.createElement('div');
+      container.id = 'lightboxVideo';
+      container.className = 'modal-video-container';
+      container.innerHTML = `<video src="${m.url}" controls autoplay class="max-h-[85vh] object-contain shadow-2xl rounded-lg"></video>`;
+      imgEl.parentElement.insertBefore(container, imgEl);
+    } else {
+      imgEl.style.display = '';
+      imgEl.src = m.url;
+    }
+    document.getElementById('lightboxCounter').textContent = `${m.type !== 'image' ? 'Video' : 'Figure'} ${currentImageIndex+1} / ${media.length}`;
+    document.getElementById('lightboxTitle').textContent = currentProject.title;
+    document.getElementById('lightboxDesc').textContent = m.caption || currentProject.longDescription || currentProject.description;
+  }
+
+  function lightboxNext() {
+    if (!currentProject) return;
+    const media = currentProject._media || [];
+    currentImageIndex = (currentImageIndex + 1) % media.length;
+    updateLightbox();
+  }
+
+  function lightboxPrev() {
+    if (!currentProject) return;
+    const media = currentProject._media || [];
+    currentImageIndex = (currentImageIndex - 1 + media.length) % media.length;
+    updateLightbox();
+  }
+
+  function closeLightbox() {
+    const lb = document.getElementById('modalLightbox');
+    lb.classList.add('hidden');
+    lb.classList.remove('flex');
+    // Clean up video embeds
+    const vid = document.getElementById('lightboxVideo');
+    if (vid) vid.remove();
+    document.getElementById('lightboxImage').style.display = '';
+    document.getElementById('modalGallery').classList.remove('hidden');
+  }
+
+  // ================================
+  // SERVICES / BOOKING
+  // ================================
+  function renderServices() {
+    document.getElementById('servicesList').innerHTML = SERVICES.map(s => {
+      const active = selectedService === s.id;
+      return `<div onclick="selectService('${s.id}')" class="p-6 rounded-2xl border-2 cursor-pointer transition-all shadow-sm ${
+        active ? 'bg-[#4a3426] border-[#4a3426] shadow-lg ring-2 ring-[#cfa848]' : 'bg-white border-white hover:border-[#cfa848]'
+      }">
+        <div class="flex justify-between items-start mb-2">
+          <h4 class="text-lg font-bold ${active ? 'text-[#f8f1e0]' : 'text-[#4a3426]'}">${s.title}</h4>
+          <span class="font-bold ${active ? 'text-[#cfa848]' : 'text-[#4a3426]'}">${s.price}</span>
+        </div>
+        <p class="text-sm mb-4 font-medium ${active ? 'text-[#eaddcf]' : 'text-[#8c7664]'}">${s.description}</p>
+        <ul class="space-y-2">
+          ${s.features.slice(0,2).map(f => `<li class="flex items-center text-xs font-bold ${active ? 'text-[#cfa848]' : 'text-[#8c7664]'}"><i data-lucide="check" class="w-3 h-3 mr-2 ${active ? 'text-[#cfa848]' : 'text-green-600'}"></i> ${f}</li>`).join('')}
+        </ul>
+      </div>`;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  function selectService(id) {
+    selectedService = id;
+    renderServices();
+    updateBookingSummary();
+  }
+
+  function getDateKey(day) {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(day).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  }
+
+  function renderCalendar() {
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const todayDate = today.getDate();
+    document.getElementById('calendarGrid').innerHTML = Array.from({length: daysInMonth}, (_, i) => i + 1).map(d => {
+      const active = selectedDate === d;
+      const dateKey = getDateKey(d);
+      const slotsBooked = bookedSlots[dateKey] || [];
+      const allBooked = slotsBooked.length >= TIME_SLOTS.length;
+      const hasBookings = slotsBooked.length > 0;
+      const isPast = d < todayDate;
+      let cls;
+      if (isPast) cls = 'opacity-30 cursor-not-allowed bg-[#f8f1e0] text-[#a89080]';
+      else if (active) cls = 'bg-[#4a3426] text-[#f8f1e0] shadow-lg';
+      else if (allBooked) cls = 'date-booked cursor-not-allowed';
+      else if (hasBookings) cls = 'bg-[#f8f1e0] text-[#5d4231] hover:bg-[#cfa848] hover:text-[#4a3426] date-booked';
+      else cls = 'bg-[#f8f1e0] text-[#5d4231] hover:bg-[#cfa848] hover:text-[#4a3426]';
+      return `<button onclick="selectDate(${d})" ${isPast || allBooked ? 'disabled' : ''} class="aspect-square rounded-lg text-sm font-bold transition-colors ${cls}">${d}</button>`;
+    }).join('');
+  }
+
+  function selectDate(d) {
+    selectedDate = d;
+    renderCalendar();
+    renderTimeSlots();
+    updateBookingSummary();
+  }
+
+  function renderTimeSlots() {
+    const dateKey = selectedDate ? getDateKey(selectedDate) : null;
+    const slotsBooked = dateKey ? (bookedSlots[dateKey] || []) : [];
+    document.getElementById('timeSlots').innerHTML = TIME_SLOTS.map(time => {
+      const disabled = !selectedDate;
+      const booked = slotsBooked.includes(time);
+      const active = selectedTime === time;
+      if (booked) {
+        return `<button disabled class="w-full py-3 px-4 rounded-lg text-sm font-bold border-2 slot-booked"><span class="flex items-center justify-center gap-2">${time} <i data-lucide="lock" class="w-3 h-3"></i></span></button>`;
+      }
+      return `<button onclick="selectTime('${time}')" ${disabled ? 'disabled' : ''} class="w-full py-3 px-4 rounded-lg text-sm font-bold transition-colors border-2 ${
+        disabled ? 'opacity-30 cursor-not-allowed bg-[#f8f1e0] border-[#eaddcf] text-[#a89080]'
+        : active ? 'bg-[#cfa848] border-[#cfa848] text-[#4a3426] shadow-md'
+        : 'bg-white border-[#eaddcf] text-[#5d4231] hover:border-[#cfa848] hover:text-[#4a3426]'
+      }">${time}</button>`;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  function selectTime(time) {
+    selectedTime = time;
+    renderTimeSlots();
+    updateBookingSummary();
+  }
+
+  function updateBookingSummary() {
+    const summary = document.getElementById('bookingSummary');
+    const btn = document.getElementById('confirmBookingBtn');
+    if (selectedService && selectedDate && selectedTime) {
+      const svc = SERVICES.find(s => s.id === selectedService);
+      const today = new Date();
+      const monthName = today.toLocaleString('default', { month: 'long' });
+      summary.innerHTML = `Booking <strong class="text-[#4a3426]">${svc.title}</strong> on <strong class="text-[#4a3426]">${monthName} ${selectedDate}, ${selectedTime}</strong>`;
+      btn.disabled = false;
+      btn.className = 'flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all bg-[#4a3426] text-white hover:bg-[#cfa848] hover:text-[#4a3426] shadow-lg';
+    } else {
+      summary.textContent = 'Please select a service, date, and time.';
+      btn.disabled = true;
+      btn.className = 'flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all bg-[#f8f1e0] text-[#a89080] cursor-not-allowed';
+    }
+    lucide.createIcons();
+  }
+
+  function confirmBooking() {
+    if (!selectedService || !selectedDate || !selectedTime) return;
+
+    // 1. Mark slot as booked
+    const dateKey = getDateKey(selectedDate);
+    if (!bookedSlots[dateKey]) bookedSlots[dateKey] = [];
+    bookedSlots[dateKey].push(selectedTime);
+    localStorage.setItem('bookedSlots', JSON.stringify(bookedSlots));
+
+    // 2. Create Google Calendar event URL
+    const svc = SERVICES.find(s => s.id === selectedService);
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate).padStart(2, '0');
+    
+    // Parse time
+    const timeParts = selectedTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    let hours = parseInt(timeParts[1]);
+    const mins = timeParts[2];
+    const period = timeParts[3].toUpperCase();
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+    const startH = String(hours).padStart(2, '0');
+    const endH = String(hours + 1).padStart(2, '0');
+    
+    const startDate = `${year}${month}${day}T${startH}${mins}00`;
+    const endDate = `${year}${month}${day}T${endH}${mins}00`;
+
+    const calTitle = encodeURIComponent(`Booking: ${svc.title} — Pierre Dubois`);
+    const calDetails = encodeURIComponent(`Service: ${svc.title}\nPrice: ${svc.price}\n\nBooked via pierre-dubois.art`);
+    const calLocation = encodeURIComponent('Online (link will be sent via email)');
+    const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calTitle}&dates=${startDate}/${endDate}&details=${calDetails}&location=${calLocation}&add=${OWNER_EMAIL}`;
+
+    // 3. Show confirmation with Calendar link
+    document.getElementById('bookingForm').classList.add('hidden');
+    const conf = document.getElementById('bookingConfirmed');
+    conf.innerHTML = `
+      <div class="flex-1 flex flex-col items-center justify-center text-center p-12 animate-fadeInScale">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6"><i data-lucide="check" class="w-10 h-10 text-green-600"></i></div>
+        <h3 class="text-3xl font-bold text-[#4a3426] mb-2">Booking Confirmed!</h3>
+        <p class="text-[#8c7664] mb-6">Your slot has been reserved. Add it to your calendar:</p>
+        <a href="${googleCalUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 bg-[#4a3426] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#cfa848] hover:text-[#4a3426] transition-all shadow-lg mb-3">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Add to Google Calendar
+        </a>
+        <p class="text-xs text-[#8c7664]">This will also send an invite to Pierre's calendar.</p>
+      </div>
+    `;
+    conf.classList.remove('hidden');
+    conf.classList.add('flex');
+    lucide.createIcons();
+
+    setTimeout(() => {
+      conf.classList.add('hidden');
+      conf.classList.remove('flex');
+      document.getElementById('bookingForm').classList.remove('hidden');
+      selectedService = null;
+      selectedDate = null;
+      selectedTime = null;
+      renderServices();
+      renderCalendar();
+      renderTimeSlots();
+      updateBookingSummary();
+    }, 8000);
+  }
+
+  // ================================
+  // MENTORSHIP
+  // ================================
+  function renderMentorship() {
+    document.getElementById('mentorshipPlans').innerHTML = MENTORSHIP_PLANS.map((plan, index) => {
+      const rec = plan.recommended;
+      return `<div class="relative flex flex-col p-8 rounded-2xl transition-all duration-300 shadow-lg border-2 anim-initial animate-fadeInUp delay-${index * 200} ${
+        rec ? 'bg-[#4a3426] text-white transform md:-translate-y-4 border-[#4a3426] shadow-xl' : 'bg-white text-[#4a3426] border-[#eaddcf] hover:-translate-y-1'
+      }">
+        ${rec ? '<div class="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-[#cfa848] text-[#4a3426] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg flex items-center gap-1 border border-[#4a3426]"><i data-lucide="star" class="w-3 h-3"></i> Most Popular</div>' : ''}
+        <div class="mb-6">
+          <h3 class="text-xl font-bold">${plan.title}</h3>
+          <div class="mt-4 flex items-baseline"><span class="text-4xl font-black ${rec ? 'text-[#cfa848]' : 'text-[#4a3426]'}">${plan.price}</span></div>
+        </div>
+        <ul class="flex-1 space-y-4 mb-8">
+          ${plan.features.map(f => `<li class="flex items-start"><i data-lucide="check-circle-2" class="flex-shrink-0 w-5 h-5 mt-0.5 text-[#cfa848]"></i><span class="ml-3 text-sm leading-relaxed font-medium ${rec ? 'text-[#eaddcf]' : 'text-[#8c7664]'}">${f}</span></li>`).join('')}
+        </ul>
+        <button class="w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+          rec ? 'bg-white hover:bg-[#cfa848] text-[#4a3426] shadow-lg' : 'bg-[#4a3426] hover:bg-[#cfa848] text-white hover:text-[#4a3426]'
+        }">Apply Now <i data-lucide="arrow-right" class="w-[18px] h-[18px]"></i></button>
+      </div>`;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  // ================================
+  // SHOP
+  // ================================
+  function renderShopCategories() {
+    document.getElementById('shopCatGrid').innerHTML = SHOP_CATEGORIES.map((cat, index) => {
+      const span = index === 0 ? 'md:col-span-2 lg:col-span-2' : '';
+      return `<div onclick="openShopCategory('${cat.id}')" class="shop-cat group relative h-80 cursor-pointer overflow-hidden rounded-xl border-2 border-[#eaddcf] bg-white shadow-lg transition-all hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(207,168,72,0.4)] hover:border-[#cfa848] ${span}">
+        <div class="absolute inset-0">
+          <img src="${cat.image}" alt="${cat.title}" class="shop-cat-img h-full w-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-[#4a3426] via-[#4a3426]/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+          <div class="absolute inset-0 bg-[#cfa848]/0 group-hover:bg-[#cfa848]/10 transition-colors duration-500 mix-blend-overlay"></div>
+        </div>
+        <div class="absolute inset-0 p-8 flex flex-col justify-end">
+          <div class="shop-cat-icon mb-auto self-start bg-[#f8f1e0]/90 backdrop-blur-sm text-[#4a3426] p-3 rounded-lg shadow-md border border-[#cfa848]/50 transition-colors">
+            <i data-lucide="${cat.icon}" class="w-7 h-7"></i>
+          </div>
+          <div class="translate-y-2 transition-transform duration-300 group-hover:translate-y-0">
+            <span class="block text-[#cfa848] font-bold tracking-widest text-xs uppercase mb-1 drop-shadow-md">${cat.subtitle}</span>
+            <h3 class="text-4xl font-black text-[#f8f1e0] uppercase leading-none mb-2 drop-shadow-md">${cat.title}</h3>
+            <p class="text-[#eaddcf] font-medium opacity-90 line-clamp-2 drop-shadow-sm">${cat.description}</p>
+          </div>
+          <div class="absolute bottom-8 right-8 shop-cat-arrow">
+            <div class="bg-[#cfa848] p-3 rounded-full text-[#4a3426] shadow-lg"><i data-lucide="arrow-right" class="w-6 h-6"></i></div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    lucide.createIcons();
+  }
+
+  function openShopCategory(catId) {
+    const cat = SHOP_CATEGORIES.find(c => c.id === catId);
+    const items = SHOP_ITEMS.filter(i => i.category === catId);
+    document.getElementById('shopCatTitle').textContent = cat.title;
+    document.getElementById('shopCatCount').textContent = `${items.length} items available`;
+    document.getElementById('shopProductGrid').innerHTML = items.map(item =>
+      `<div class="group bg-white rounded-2xl overflow-hidden shadow-sm border border-[#eaddcf] transition-all hover:shadow-xl hover:border-[#4a3426] hover:-translate-y-1 flex flex-col h-full animate-fadeInUp">
+        <div class="relative overflow-hidden bg-[#eaddcf] aspect-[4/3]">
+          <img src="${item.image}" alt="${item.title}" class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105" />
+          <div class="absolute top-3 right-3 bg-[#4a3426]/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md border border-white/10 shadow-lg">${item.fileType}</div>
+        </div>
+        <div class="p-5 flex-grow flex flex-col">
+          <h4 class="text-lg font-bold text-[#4a3426] mb-2 leading-snug group-hover:text-[#cfa848] transition-colors">${item.title}</h4>
+          <div class="mt-auto pt-4 border-t border-[#f8f1e0] flex items-center justify-between">
+            <span class="text-xl font-black text-[#4a3426]">€${item.price.toFixed(2)}</span>
+            <button class="flex items-center gap-2 bg-[#f8f1e0] hover:bg-[#4a3426] hover:text-white text-[#5d4231] px-3 py-2 rounded-lg transition-colors text-sm font-bold border border-[#f8f1e0] hover:border-[#4a3426]">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i> Add
+            </button>
+          </div>
+        </div>
+      </div>`
+    ).join('');
+    
+    document.getElementById('shopCategories').classList.add('hidden');
+    document.getElementById('shopProducts').classList.remove('hidden');
+    lucide.createIcons();
+  }
+
+  function backToShopCategories() {
+    document.getElementById('shopProducts').classList.add('hidden');
+    document.getElementById('shopCategories').classList.remove('hidden');
+  }
+
+  // ================================
+  // KEYBOARD NAVIGATION
+  // ================================
+  document.addEventListener('keydown', function(e) {
+    // Project modal
+    if (currentProject) {
+      const images = currentProject.images && currentProject.images.length > 0 ? currentProject.images : [currentProject.image];
+      const lb = document.getElementById('modalLightbox');
+      const gallery = document.getElementById('modalGallery');
+      const split = document.getElementById('modalSplit');
+      
+      if (e.key === 'ArrowRight') {
+        if (!lb.classList.contains('hidden') || !split.classList.contains('hidden')) {
+          currentImageIndex = (currentImageIndex + 1) % images.length;
+          if (!lb.classList.contains('hidden')) updateLightbox(images);
+          else { document.getElementById('modalMainImage').src = images[currentImageIndex]; jumpToImage(currentImageIndex); }
+        }
+      }
+      if (e.key === 'ArrowLeft') {
+        if (!lb.classList.contains('hidden') || !split.classList.contains('hidden')) {
+          currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+          if (!lb.classList.contains('hidden')) updateLightbox(images);
+          else { document.getElementById('modalMainImage').src = images[currentImageIndex]; jumpToImage(currentImageIndex); }
+        }
+      }
+      if (e.key === 'Escape') {
+        if (!lb.classList.contains('hidden')) { closeLightbox(); }
+        else if (!gallery.classList.contains('hidden')) { closeModalGallery(); }
+        else { closeProjectModal(); }
+        return;
+      }
+    }
+
+    // Demoreel escape
+    if (e.key === 'Escape') {
+      const cvModal = document.getElementById('cvModal');
+      if (!cvModal.classList.contains('hidden')) { closeCVModal(); return; }
+      const demoModal = document.getElementById('demoreelModal');
+      if (!demoModal.classList.contains('hidden')) closeDemoreel();
+    }
+  });
+
+  // ================================
+  // NAV STYLING
+  // ================================
+  const navStyle = document.createElement('style');
+  navStyle.textContent = `
+    .nav-btn { color: #f8f1e0; }
+    .nav-btn:hover { background: #5d4231; color: #cfa848; }
+    .active-nav { background: #cfa848 !important; color: #4a3426 !important; box-shadow: 0 4px 0 rgb(60,40,30); transform: translateY(-2px); }
+    .nav-btn-m { color: #f8f1e0; }
+    .nav-btn-m:hover { background: #5d4231; }
+    .active-nav-m { background: #cfa848 !important; color: #4a3426 !important; }
+  `;
+  document.head.appendChild(navStyle);
+
+  // ================================
+  // INIT
+  // ================================
+  function init() {
+    renderTagFilters();
+    renderPortfolioGrid();
+    renderServices();
+    renderCalendar();
+    renderTimeSlots();
+    renderMentorship();
+    renderShopCategories();
+    lucide.createIcons();
+  }
+
+  // Wait for DOM
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  </script>
+    <script>
+    function sendContactForm() {
+      var firstName = document.getElementById('firstName').value.trim();
+      var lastName = document.getElementById('lastName').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var subject = document.getElementById('subject').value;
+      var message = document.getElementById('message').value.trim();
+      var btn = document.getElementById('contactSendBtn');
+      var status = document.getElementById('contactStatus');
+
+      if (!firstName || !lastName || !email || !message) {
+        status.className = 'mt-4 text-center font-bold text-sm text-red-600';
+        status.textContent = 'Veuillez remplir tous les champs.';
+        status.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Envoi en cours...';
+
+      emailjs.send("service_50gdkzk", "template_3ycin7e", {
+        from_name: firstName + ' ' + lastName,
+        from_email: email,
+        subject: subject,
+        message: message
+      }).then(function() {
+        status.className = 'mt-4 text-center font-bold text-sm text-green-700';
+        status.textContent = '\u2705 Message envoy\u00e9 avec succ\u00e8s ! Je vous r\u00e9pondrai rapidement.';
+        status.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = 'Send Message <i data-lucide="send" class="w-[18px] h-[18px]"></i>';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('message').value = '';
+        document.getElementById('subject').selectedIndex = 0;
+      }, function(error) {
+        status.className = 'mt-4 text-center font-bold text-sm text-red-600';
+        status.textContent = '\u274c Erreur lors de l\u2019envoi. Veuillez r\u00e9essayer.';
+        status.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = 'Send Message <i data-lucide="send" class="w-[18px] h-[18px]"></i>';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        console.error('EmailJS error:', error);
+      });
+    }
+    </script>
+</body>
+</html>
