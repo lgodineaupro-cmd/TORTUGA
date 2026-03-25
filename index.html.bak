@@ -136,6 +136,10 @@ const SITE_SETTINGS = {
   "siteTitle": "3D Syllabus",
   "siteSubtitle": "Syllabus Interactif",
   "siteBadge": "Cours • 11 Semaines",
+  "labelPlanning": "Planning de la semaine",
+  "labelDay": "Sem",
+  "labelObjective": "Objectif",
+  "labelDeliverables": "Livrables",
   "pages": [
     {
       "id": "page_1",
@@ -183,11 +187,12 @@ const COURSE_DATA = [
     "week": 1,
     "title": "Box modeling « Fortiche »",
     "description": "Introduction au hardsurface stylisé avec une topologie propre.",
-    "category": "workflow",
+    "category": "Modelling / Texturing",
     "objective": "Créer un asset hardsurface stylisé détaillé (weapons, bâtiments, artefacts, environnement) avec topo clean, optimisée et prête pour un texturing PBR et stylisé à la manière des studios d'animation avec un pipe box modelling (fortiche, Mikros illumination)",
     "tools": [
       "Maya",
-      "Blender"
+      "Blender",
+      "Substance 3D Painter"
     ],
     "deliverables": [
       "1 asset low poly propre (quad-based, bonnes loops)",
@@ -224,15 +229,15 @@ const COURSE_DATA = [
         "title": "UVs & Vérification",
         "tasks": [
           "UVs (cuts logiques, texel density, UDIM si nécessaire)",
-          "Tests rapides dans Substance"
+          "Debut Texturing sylisé"
         ]
       },
       {
         "day": 5,
         "title": "Finalisation",
         "tasks": [
-          "Nettoyage, check « production ready » (scale, pivot, freeze, naming)",
-          "Rendu clay simple + export vers Substance"
+          "Texturing stylisé substance Painter",
+          "Finalisation Rendu"
         ]
       }
     ],
@@ -245,11 +250,8 @@ const COURSE_DATA = [
         "panY": 0
       },
       {
-        "student": "Luc Reynal",
-        "image": "images/Box_modelling/luc-reynal.jpg",
-        "zoom": 1,
-        "panX": 0,
-        "panY": 0
+        "student": "Raphael Jourdain",
+        "image": "images/rendus/module_1/raphael-jourdain.png"
       },
       {
         "student": "Emma Piot",
@@ -257,24 +259,40 @@ const COURSE_DATA = [
       },
       {
         "student": "Lola Geron",
-        "image": "images/rendus/module_1/lola-geron-ig-_il-la_-layout002.webp"
+        "image": "images/rendus/module_1/lola-geron-ig-_il-la_-layout002.webp",
+        "zoom": 1.15,
+        "panX": -52,
+        "panY": 4
       },
       {
         "student": "Nathan Bariohay",
-        "image": "images/rendus/module_1/nathan-bariohay.jpg"
+        "image": "images/rendus/module_1/nathan-bariohay.jpg",
+        "zoom": 1
       },
       {
         "student": "Quentin Schlicht",
-        "image": "images/rendus/module_1/quentin-schlicht.jpg"
+        "image": "images/rendus/module_1/quentin-schlicht.jpg",
+        "zoom": 1
       },
       {
-        "student": "Raphael Jourdain",
-        "image": "images/rendus/module_1/raphael-jourdain.png"
+        "student": "Luc Reynal",
+        "image": "images/Box_modelling/luc-reynal.jpg",
+        "zoom": 1,
+        "panX": 0,
+        "panY": 0
       }
     ],
     "extraBlocks": [],
-    "colors": {},
-    "heights": {},
+    "colors": {
+      "dayIconBg1": "#ffffff",
+      "dayIconBg0": "#ffffff",
+      "dayIconBg2": "#ffffff",
+      "dayIconBg3": "#ffffff",
+      "dayIconBg4": "#ffffff"
+    },
+    "heights": {
+      "objectiveCard": "351px"
+    },
     "weekLabel": "Semaine"
   },
   {
@@ -561,7 +579,7 @@ const COURSE_DATA = [
     "week": 5,
     "title": "Lookdev ZBrush → Substance → Marmoset",
     "description": "Concept 3D et rendu de qualité portfolio.",
-    "category": "specialized",
+    "category": "lookdev",
     "objective": "Ici L'étudiant ne doit se préoccuper que de l'image finale et produire dans un temps très limité une image de concept /look dev 3D donnant une idée du style finale de son film.",
     "tools": [
       "ZBrush",
@@ -639,7 +657,7 @@ const COURSE_DATA = [
     "week": 6,
     "title": "Pipe Cloth Marvelous → ZBrush",
     "description": "Création de vêtements réalistes ou stylisés.",
-    "category": "specialized",
+    "category": "Modelling / Texturing",
     "objective": "Enseigner un pipe complet pour les vêtements, du pattern Marvelous au mesh game/ciné prêt.",
     "tools": [
       "Marvelous Designer",
@@ -801,7 +819,7 @@ const COURSE_DATA = [
     "week": 8,
     "title": "Intégration IA dans un pipe 3D",
     "description": "Utilisation éthique et technique de l'IA.",
-    "category": "specialized",
+    "category": "IA",
     "objective": "Montrer comment l'IA peut assister à différents endroits du pipe (références, design, scripts, automatisation).",
     "tools": [
       "ComfyUI",
@@ -1222,7 +1240,7 @@ function renderModuleDetail() {
         <div class="group bg-[#fdf7ec] border border-[#eaddcf] rounded-xl overflow-hidden hover:border-[#cfa848] transition-colors shadow-sm" style="${(m.colors&&m.colors['dayBg'+di])?'background:'+m.colors['dayBg'+di]:'' }">
             <div class="p-4 flex flex-col md:flex-row md:items-center gap-4">
                 <div class="flex-shrink-0 w-16 h-16 rounded-lg flex flex-col items-center justify-center border border-[#eaddcf] group-hover:border-[#cfa848] transition-colors shadow-sm" style="background:${(m.colors&&m.colors['dayIconBg'+di])||'#ffffff'};color:${(m.colors&&m.colors['dayNum'+di])||'#4a3426'}">
-                    <span class="text-xs uppercase font-bold opacity-50">Jour</span>
+                    <span class="text-xs uppercase font-bold opacity-50">${SITE_SETTINGS.labelDay||'Jour'}</span>
                     <span class="text-2xl font-bold">${day.day}</span>
                 </div>
                 <div class="flex-grow">
@@ -1254,7 +1272,7 @@ function renderModuleDetail() {
                 <div class="bg-[#f8f1e0] p-6 rounded-2xl border border-[#eaddcf] shadow-sm" style="${(m.colors&&m.colors.objectiveBg)?'background:'+m.colors.objectiveBg:'' }">
                     <div class="flex items-center gap-3 mb-4 text-[#cfa848]">
                         ${ICONS.trophy}
-                        <h2 class="font-black text-xl text-[#4a3426]">Objectif</h2>
+                        <h2 class="font-black text-xl text-[#4a3426]">${SITE_SETTINGS.labelObjective||'Objectif'}</h2>
                     </div>
                     <p class="text-[#5d4231] text-sm leading-relaxed" style="${(m.colors&&m.colors.objective)?'color:'+m.colors.objective:'' }">${m.objective}</p>
                 </div>
@@ -1262,7 +1280,7 @@ function renderModuleDetail() {
                 <div class="bg-[#f8f1e0] p-6 rounded-2xl border border-[#eaddcf] shadow-sm" style="${(m.colors&&m.colors.deliverablesBg)?'background:'+m.colors.deliverablesBg:'' }">
                     <div class="flex items-center gap-3 mb-4 text-[#cfa848]">
                         ${ICONS.checkCircle}
-                        <h2 class="font-black text-xl text-[#4a3426]">Livrables</h2>
+                        <h2 class="font-black text-xl text-[#4a3426]">${SITE_SETTINGS.labelDeliverables||'Livrables'}</h2>
                     </div>
                     <ul class="space-y-3">${deliverablesHtml}</ul>
                 </div>
@@ -1278,7 +1296,7 @@ function renderModuleDetail() {
             <div class="lg:col-span-2">
                 <div class="flex items-center gap-3 mb-6">
                     <span class="text-[#cfa848]">${ICONS.calendar}</span>
-                    <h2 class="text-2xl font-black text-[#4a3426]">Planning de la semaine</h2>
+                    <h2 class="text-2xl font-black text-[#4a3426]">${SITE_SETTINGS.labelPlanning||'Planning de la semaine'}</h2>
                 </div>
                 <div class="space-y-4">${scheduleHtml}</div>
             </div>

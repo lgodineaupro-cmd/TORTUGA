@@ -266,7 +266,7 @@ def extract_site_settings(html: str) -> dict:
     """Extract SITE_SETTINGS from HTML and return as Python dict."""
     start, end = find_site_settings_bounds(html)
     if start is None:
-        return {"siteTitle": "3D Masterclass", "siteSubtitle": "Syllabus Interactif", "siteBadge": "Parcours Pro \u2022 10 Semaines", "pages": []}
+        return {"siteTitle": "3D Masterclass", "siteSubtitle": "Syllabus Interactif", "siteBadge": "Parcours Pro • 10 Semaines", "labelPlanning": "Planning de la semaine", "labelDay": "Jour", "labelObjective": "Objectif", "labelDeliverables": "Livrables", "pages": []}
 
     obj_start = html.index('{', start)
     obj_str = html[obj_start:end].rstrip(';')
@@ -274,7 +274,7 @@ def extract_site_settings(html: str) -> dict:
     try:
         return json.loads(obj_str)
     except json.JSONDecodeError:
-        return {"siteTitle": "3D Masterclass", "siteSubtitle": "Syllabus Interactif", "siteBadge": "Parcours Pro \u2022 10 Semaines", "pages": []}
+        return {"siteTitle": "3D Masterclass", "siteSubtitle": "Syllabus Interactif", "siteBadge": "Parcours Pro • 10 Semaines", "labelPlanning": "Planning de la semaine", "labelDay": "Jour", "labelObjective": "Objectif", "labelDeliverables": "Livrables", "pages": []}
 
 
 def site_settings_to_js(settings: dict) -> str:
@@ -544,8 +544,8 @@ def _parse_multipart(data: bytes, boundary: bytes) -> dict:
 if __name__ == '__main__':
     os.chdir(BASE_DIR)
     print(f"Syllabus Editor  →  http://localhost:{PORT}/")
+    socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(('', PORT), EditorHandler) as httpd:
-        httpd.allow_reuse_address = True
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

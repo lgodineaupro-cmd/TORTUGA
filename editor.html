@@ -243,7 +243,7 @@ function getModuleIcon(cat,title){
 
 // ════ STATE ══════════════════════════════════════════════════════════════════
 let modules=[], currentId=null, dirty=false;
-let siteSettings={siteTitle:'3D Masterclass',siteSubtitle:'Syllabus Interactif',siteBadge:'Parcours Pro • 10 Semaines',pages:[]};
+let siteSettings={siteTitle:'3D Masterclass',siteSubtitle:'Syllabus Interactif',siteBadge:'Parcours Pro • 10 Semaines',labelPlanning:'Planning de la semaine',labelDay:'Jour',labelObjective:'Objectif',labelDeliverables:'Livrables',pages:[]};
 let editingPageId=null;
 let undoStack=[]; const UNDO_LIMIT=100;
 
@@ -433,6 +433,13 @@ function onSettingChange(){
     siteSettings.siteTitle=document.getElementById('ed-siteTitle').value;
     siteSettings.siteSubtitle=document.getElementById('ed-siteSubtitle').value;
     siteSettings.siteBadge=document.getElementById('ed-siteBadge').value;
+    markDirty();
+}
+function updateLabel(key,val){
+    siteSettings[key]=val;
+    const inputId='ed-'+key;
+    const el=document.getElementById(inputId);
+    if(el) el.value=val;
     markDirty();
 }
 
@@ -756,7 +763,7 @@ function renderModuleDetail(){
             <div class="p-4 flex flex-col md:flex-row md:items-start gap-4">
                 <div class="flex-shrink-0 flex flex-col items-center gap-0.5">
                     <div id="dayIcon${di}" class="w-16 h-16 rounded-lg flex flex-col items-center justify-center border border-[#eaddcf] hover:border-[#cfa848] transition-colors shadow-sm" style="background:${dayIconBg};color:${dayNumC}">
-                        <span class="text-xs uppercase font-bold opacity-50">Jour</span>
+                        <span contenteditable="true" spellcheck="false" class="text-xs uppercase font-bold opacity-50" style="outline:none;cursor:text;min-width:20px;text-align:center;" onblur="updateLabel('labelDay',this.innerText.trim())" onkeydown="stopEnter(event)" onpaste="pastePlain(event)">${escHtml(siteSettings.labelDay||'Jour')}</span>
                         <span class="text-2xl font-bold">${day.day}</span>
                     </div>
                     <div class="del-btn flex gap-px justify-center">
@@ -902,7 +909,8 @@ function renderModuleDetail(){
                 <!-- Objectif card -->
                 <div class="left-card hover-group p-6 rounded-2xl border border-[#eaddcf] shadow-sm relative" id="objectiveCard" style="background:${objBg};${objH?'min-height:'+objH:''}">
                     <div class="flex items-center gap-3 mb-4 text-[#cfa848]">${ICONS.trophy}
-                        <h2 class="font-black text-xl text-[#4a3426] flex-1">Objectif</h2>
+                        <h2 contenteditable="true" spellcheck="false" class="font-black text-xl text-[#4a3426] flex-1" style="outline:none;cursor:text;"
+                            onblur="updateLabel('labelObjective',this.innerText.trim())" onkeydown="stopEnter(event)" onpaste="pastePlain(event)">${escHtml(siteSettings.labelObjective||'Objectif')}</h2>
                         <button class="del-btn flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[#4a3426]/25 hover:text-[#cfa848] text-xs" onclick="showColorPickerBg(event,document.getElementById('objectiveCard'),'objectiveBg')" title="Fond">${ICONS.paintBucket}<span style="font-size:9px">bg</span></button>
                     </div>
                     <p contenteditable="true" data-cp-key="objective"
@@ -916,7 +924,8 @@ function renderModuleDetail(){
                 <!-- Livrables card -->
                 <div class="left-card hover-group p-6 rounded-2xl border border-[#eaddcf] shadow-sm relative" id="deliverablesCard" style="background:${delBg};${delH?'min-height:'+delH:''}">
                     <div class="flex items-center gap-3 mb-4 text-[#cfa848]">${ICONS.checkCircle}
-                        <h2 class="font-black text-xl text-[#4a3426] flex-1">Livrables</h2>
+                        <h2 contenteditable="true" spellcheck="false" class="font-black text-xl text-[#4a3426] flex-1" style="outline:none;cursor:text;"
+                            onblur="updateLabel('labelDeliverables',this.innerText.trim())" onkeydown="stopEnter(event)" onpaste="pastePlain(event)">${escHtml(siteSettings.labelDeliverables||'Livrables')}</h2>
                         <button class="del-btn flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[#4a3426]/25 hover:text-[#cfa848] text-xs" onclick="showColorPickerBg(event,document.getElementById('deliverablesCard'),'deliverablesBg')" title="Fond">${ICONS.paintBucket}<span style="font-size:9px">bg</span></button>
                     </div>
                     <ul class="space-y-3">${delHtml}</ul>
@@ -938,7 +947,7 @@ function renderModuleDetail(){
 
             <!-- RIGHT COLUMN -->
             <div class="lg:col-span-2">
-                <div class="flex items-center gap-3 mb-6"><span class="text-[#cfa848]">${ICONS.calendar}</span><h2 class="text-2xl font-black text-[#4a3426]">Planning de la semaine</h2></div>
+                <div class="flex items-center gap-3 mb-6"><span class="text-[#cfa848]">${ICONS.calendar}</span><h2 contenteditable="true" spellcheck="false" class="text-2xl font-black text-[#4a3426]" style="outline:none;cursor:text;" onblur="updateLabel('labelPlanning',this.innerText.trim())" onkeydown="stopEnter(event)" onpaste="pastePlain(event)">${escHtml(siteSettings.labelPlanning||'Planning de la semaine')}</h2></div>
                 <div class="space-y-4">${schedHtml}</div>
                 <button onclick="addDay()" class="mt-4 w-full py-3 border-2 border-dashed border-[#cfa848]/30 rounded-xl text-[#4a3426]/40 hover:border-[#cfa848] hover:text-[#cfa848] transition-all text-sm font-medium">+ Ajouter un jour</button>
             </div>
