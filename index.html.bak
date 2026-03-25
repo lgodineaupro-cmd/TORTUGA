@@ -136,8 +136,8 @@ const SITE_SETTINGS = {
   "siteTitle": "3D Syllabus",
   "siteSubtitle": "Syllabus Interactif",
   "siteBadge": "Cours • 11 Semaines",
-  "labelPlanning": "Planning de la semaine",
-  "labelDay": "Sem",
+  "labelPlanning": "Planning du Module",
+  "labelDay": "SEM",
   "labelObjective": "Objectif",
   "labelDeliverables": "Livrables",
   "pages": [
@@ -146,21 +146,21 @@ const SITE_SETTINGS = {
       "buttonLabel": "Organisation",
       "buttonIcon": "calendar",
       "title": "Organisation des Cours",
-      "description": "La formation est organisée pour maximiser votre apprentissage avec un accompagnement quotidien structuré.",
+      "description": "Le cours est organisé sur 3h par semaines",
       "cards": [
         {
           "id": "card_1",
-          "title": "Cours Live - 2h en journée",
-          "description": "Chaque jour, 2 heures de cours en direct avec démonstrations pratiques et explications détaillées.",
-          "badge": "Vidéo du cours disponible pour révision",
+          "title": "Cours Live - 3h en journée",
+          "description": "Chaque jour, 3 heures de cours avec démonstrations pratiques et explications détaillées.",
+          "badge": "Vidéo du cours disponible pour révision + pdf résumé",
           "icon": "video",
           "iconBg": "gold",
           "size": "M"
         },
         {
           "id": "card_2",
-          "title": "Questions Durant la Journée",
-          "description": "Posez vos questions à tout moment pendant votre pratique. Échanges continus sur le forum dédié et support asynchrone.",
+          "title": "Questions Durant le cours",
+          "description": "Posez vos questions à tout moment pendant votre pratique. \nVideos du cours déposés dans le dossier teams dédié",
           "badge": "",
           "icon": "chat",
           "iconBg": "brown",
@@ -168,8 +168,8 @@ const SITE_SETTINGS = {
         },
         {
           "id": "card_3",
-          "title": "Suivi en Fin de Journée - 1h",
-          "description": "Session d’accompagnement de 1 heure pour répondre à vos questions, débloquer les difficultés rencontrées et valider votre progression.",
+          "title": "Suivi via teams",
+          "description": "Ne pas hésiter à envoyer ses questions via teams je répondrais des que possible.\nVideo possible selon les cas.",
           "badge": "Feedback personnalisé sur votre travail",
           "icon": "users",
           "iconBg": "gold",
@@ -177,7 +177,7 @@ const SITE_SETTINGS = {
         }
       ],
       "summaryTitle": "📚 Format Quotidien = 3h d’encadrement",
-      "summaryText": "2h de cours live + 1h de suivi personnalisé + support continu"
+      "summaryText": "3h de cours live  + support continu"
     }
   ]
 };
@@ -250,29 +250,30 @@ const COURSE_DATA = [
         "panY": 0
       },
       {
-        "student": "Raphael Jourdain",
-        "image": "images/rendus/module_1/raphael-jourdain.png"
+        "student": "sarah larrieu manan",
+        "image": "images/rendus/module_1/sarah-larrieu-manan.jpg"
       },
       {
         "student": "Emma Piot",
-        "image": "images/rendus/module_1/emma-piot.jpg"
+        "image": "images/rendus/module_1/emma-piot.jpg",
+        "zoom": 1
       },
       {
         "student": "Lola Geron",
         "image": "images/rendus/module_1/lola-geron-ig-_il-la_-layout002.webp",
-        "zoom": 1.15,
+        "zoom": 1,
         "panX": -52,
         "panY": 4
       },
       {
         "student": "Nathan Bariohay",
         "image": "images/rendus/module_1/nathan-bariohay.jpg",
-        "zoom": 1
+        "zoom": 0.75
       },
       {
         "student": "Quentin Schlicht",
         "image": "images/rendus/module_1/quentin-schlicht.jpg",
-        "zoom": 1
+        "zoom": 1.3
       },
       {
         "student": "Luc Reynal",
@@ -280,16 +281,15 @@ const COURSE_DATA = [
         "zoom": 1,
         "panX": 0,
         "panY": 0
+      },
+      {
+        "student": "Raphael Jourdain",
+        "image": "images/rendus/module_1/raphael-jourdain.png",
+        "zoom": 1
       }
     ],
     "extraBlocks": [],
-    "colors": {
-      "dayIconBg1": "#ffffff",
-      "dayIconBg0": "#ffffff",
-      "dayIconBg2": "#ffffff",
-      "dayIconBg3": "#ffffff",
-      "dayIconBg4": "#ffffff"
-    },
+    "colors": {},
     "heights": {
       "objectiveCard": "351px"
     },

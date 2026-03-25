@@ -10,8 +10,24 @@ import re
 import shutil
 import socketserver
 import subprocess
+import tempfile
 import urllib.parse
 from pathlib import Path
+
+from playwright.sync_api import sync_playwright
+
+# ---------------------------------------------------------------------------
+# Playwright browser (singleton, launched once)
+# ---------------------------------------------------------------------------
+_pw = None
+_browser = None
+
+def get_browser():
+    global _pw, _browser
+    if _browser is None:
+        _pw = sync_playwright().start()
+        _browser = _pw.chromium.launch(headless=True)
+    return _browser
 
 PORT = 9092
 BASE_DIR = Path(__file__).parent.resolve()
@@ -374,6 +390,8 @@ class EditorHandler(http.server.BaseHTTPRequestHandler):
             self._handle_upload()
         elif path == '/api/publish':
             self._handle_publish()
+        elif path == '/api/export-png':
+            self._handle_export_png()
         else:
             self._send_error('Not found', 404)
 
@@ -408,6 +426,98 @@ class EditorHandler(http.server.BaseHTTPRequestHandler):
             self._send_json({'ok': False, 'error': 'git timeout (>60s)'})
         except Exception as e:
             self._send_json({'ok': False, 'error': str(e)})
+
+    def _handle_export_png(self):
+        """Render module HTML in headless Chromium and return a cropped PNG."""
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            payload = json.loads(body)
+            html_fragment = payload.get('html', '')
+
+            if not html_fragment:
+                self._send_error('No html provided', 400)
+                return
+
+            # Build a full HTML page that loads Tailwind + Inter font
+            full_html = f'''<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * {{ margin:0; padding:0; box-sizing:border-box; }}
+  body {{ font-family:'Inter',sans-serif; background:#ffffff; width:1100px; overflow-x:hidden; }}
+  .banner-gradient {{ background:linear-gradient(180deg,#e0d1bc 0%,#eaddcf 50%,rgba(248,241,224,0) 100%);border-radius:1rem;padding:2rem 2rem 2.5rem 2rem;margin:0 0 1.5rem 0; }}
+</style>
+</head>
+<body>
+<div id="capture">{html_fragment}</div>
+<script>
+// Signal when Tailwind + fonts + images are ready
+(async () => {{
+  // Wait for Tailwind to process
+  await new Promise(r => setTimeout(r, 500));
+  // Wait for all images
+  const imgs = document.querySelectorAll('img');
+  await Promise.all([...imgs].map(img => img.complete ? Promise.resolve() : new Promise(r => {{ img.onload=r; img.onerror=r; }})));
+  // Wait for fonts
+  await document.fonts.ready;
+  document.title = 'READY';
+}})();
+</script>
+</body>
+</html>'''
+
+            # Write to a temp file  (file:// URL so images with relative paths work)
+            with tempfile.NamedTemporaryFile('w', suffix='.html', dir=str(BASE_DIR),
+                                              delete=False, encoding='utf-8') as f:
+                f.write(full_html)
+                tmp_path = f.name
+
+            try:
+                browser = get_browser()
+                page = browser.new_page(viewport={'width': 1100, 'height': 800}, device_scale_factor=2)
+                page.goto('file:///' + tmp_path.replace('\\', '/'), wait_until='networkidle')
+
+                # Wait for our signal (title becomes 'READY')
+                page.wait_for_function("document.title === 'READY'", timeout=15000)
+                # Extra settle time
+                page.wait_for_timeout(300)
+
+                # Measure actual content
+                box = page.evaluate('''() => {
+                    const el = document.getElementById('capture');
+                    const r = el.getBoundingClientRect();
+                    return { x: r.x, y: r.y, width: r.width, height: r.height };
+                }''')
+
+                # Resize viewport to content height to avoid clipping
+                page.set_viewport_size({'width': 1100, 'height': int(box['height']) + 10})
+                page.wait_for_timeout(100)
+
+                # Re-measure after resize
+                box = page.evaluate('''() => {
+                    const el = document.getElementById('capture');
+                    const r = el.getBoundingClientRect();
+                    return { x: r.x, y: r.y, width: r.width, height: r.height };
+                }''')
+
+                png_bytes = page.screenshot(
+                    clip={'x': box['x'], 'y': box['y'],
+                          'width': box['width'], 'height': box['height']},
+                    type='png'
+                )
+                page.close()
+            finally:
+                os.unlink(tmp_path)
+
+            self._send(200, 'image/png', png_bytes)
+
+        except Exception as e:
+            print(f"[EXPORT-PNG ERROR] {e}")
+            self._send_error(str(e))
 
     def _handle_save_modules(self):
         try:

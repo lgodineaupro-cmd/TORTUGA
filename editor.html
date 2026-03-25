@@ -157,6 +157,10 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                 Publier &amp; voir
             </a>
+            <button onclick="openExportModal()" class="flex items-center gap-2 px-3 py-1 rounded-full bg-[#3a2418] border border-[#cfa848]/30 text-sm text-[#f8f1e0] font-medium hover:border-[#cfa848] transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Images
+            </button>
         </div>
     </div>
 </header>
@@ -1415,6 +1419,297 @@ async function publishAndView(){
 
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
 init();
+</script>
+
+<!-- Export Images Modal -->
+<div id="exportModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50" onclick="if(event.target===this)closeExportModal()">
+    <div class="bg-[#f8f1e0] rounded-2xl shadow-2xl border-2 border-[#cfa848] p-6 w-full max-w-lg mx-4 animate-fade-slide">
+        <div class="flex items-center justify-between mb-5">
+            <h2 class="text-xl font-black text-[#4a3426]">Export Images</h2>
+            <button onclick="closeExportModal()" class="text-[#4a3426]/50 hover:text-[#4a3426] text-xl font-bold">&times;</button>
+        </div>
+        <p class="text-xs text-[#5d4231] mb-4">Chaque module sera capturé en une seule image PNG (du titre aux rendus étudiants). 1 module = 1 fichier image, téléchargé automatiquement.</p>
+        <div class="space-y-3 mb-5">
+            <label class="flex items-center gap-3 p-3 rounded-xl border border-[#eaddcf] hover:border-[#cfa848] cursor-pointer transition-colors bg-white/50">
+                <input type="radio" name="exportMode" value="current" checked class="accent-[#cfa848]">
+                <div>
+                    <div class="font-bold text-[#4a3426] text-sm">Module actuel</div>
+                    <div class="text-xs text-[#5d4231]">Exporte le module actuellement sélectionné (1 image)</div>
+                </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl border border-[#eaddcf] hover:border-[#cfa848] cursor-pointer transition-colors bg-white/50">
+                <input type="radio" name="exportMode" value="all" class="accent-[#cfa848]">
+                <div>
+                    <div class="font-bold text-[#4a3426] text-sm">Tous les modules</div>
+                    <div class="text-xs text-[#5d4231]">1 image par module</div>
+                </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl border border-[#eaddcf] hover:border-[#cfa848] cursor-pointer transition-colors bg-white/50">
+                <input type="radio" name="exportMode" value="range" class="accent-[#cfa848]">
+                <div>
+                    <div class="font-bold text-[#4a3426] text-sm">Plage de modules</div>
+                    <div class="text-xs text-[#5d4231]">Du module X au module Y</div>
+                </div>
+            </label>
+        </div>
+        <div id="exportRangeRow" class="hidden mb-5 px-1">
+            <div class="flex items-center gap-3">
+                <label class="text-sm font-bold text-[#4a3426] shrink-0">De</label>
+                <select id="exportFrom" class="flex-1 px-3 py-2 rounded-lg border border-[#eaddcf] bg-white text-sm text-[#4a3426] focus:border-[#cfa848] outline-none truncate"></select>
+                <label class="text-sm font-bold text-[#4a3426] shrink-0">à</label>
+                <select id="exportTo" class="flex-1 px-3 py-2 rounded-lg border border-[#eaddcf] bg-white text-sm text-[#4a3426] focus:border-[#cfa848] outline-none truncate"></select>
+            </div>
+        </div>
+        <div id="exportProgress" class="hidden mb-4">
+            <div class="flex items-center gap-2 text-sm text-[#5d4231] mb-2">
+                <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfa848" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                <span id="exportProgressText">Capture en cours…</span>
+            </div>
+            <div class="w-full h-2 bg-[#eaddcf] rounded-full overflow-hidden">
+                <div id="exportProgressBar" class="h-full bg-[#cfa848] rounded-full transition-all duration-300" style="width:0%"></div>
+            </div>
+        </div>
+        <button id="exportGenBtn" onclick="generateImages()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#cfa848] hover:bg-[#b8922e] text-[#4a3426] font-bold text-sm border border-[#b8922e] shadow-[0_3px_0_rgb(140,100,20)] hover:shadow-none hover:translate-y-0.5 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger les images
+        </button>
+    </div>
+</div>
+
+<script>
+// ════ EXPORT IMAGES (html2canvas → PNG, 1 module = 1 image) ═════════════════
+function openExportModal(){
+    const modal=document.getElementById('exportModal');
+    modal.classList.remove('hidden');
+    modal.style.display='flex';
+    const fromSel=document.getElementById('exportFrom'), toSel=document.getElementById('exportTo');
+    fromSel.innerHTML=''; toSel.innerHTML='';
+    modules.forEach(m=>{
+        const lbl=`M${m.id} — ${(m.title||'').substring(0,30)}`;
+        fromSel.innerHTML+=`<option value="${m.id}">${lbl}</option>`;
+        toSel.innerHTML+=`<option value="${m.id}">${lbl}</option>`;
+    });
+    if(modules.length) toSel.value=modules[modules.length-1].id;
+    document.querySelectorAll('input[name="exportMode"]').forEach(r=>r.onchange=toggleExportRange);
+    toggleExportRange();
+    document.getElementById('exportProgress').classList.add('hidden');
+    document.getElementById('exportGenBtn').disabled=false;
+    document.getElementById('exportGenBtn').style.opacity='1';
+}
+function closeExportModal(){
+    const modal=document.getElementById('exportModal');
+    modal.classList.add('hidden');
+    modal.style.display='none';
+}
+function toggleExportRange(){
+    const mode=document.querySelector('input[name="exportMode"]:checked').value;
+    document.getElementById('exportRangeRow').classList.toggle('hidden',mode!=='range');
+}
+
+function buildModuleHtml(m){
+    /* ── Uses Tailwind classes (identical to index.html renderModuleDetail) ── */
+
+    const toolsHtml=(m.tools||[]).map(t=>`
+        <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#eaddcf] border border-[#cfa848]/30 text-[#4a3426] text-sm font-medium">
+            <span class="text-[#cfa848]">${ICONS.penTool}</span>
+            ${t}
+        </span>`).join('');
+
+    const deliverablesHtml=(m.deliverables||[]).map((d,i)=>`
+        <li class="flex items-start gap-3 text-sm text-[#5d4231]">
+            <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#cfa848] shrink-0"></div>
+            <span style="${(m.colors&&m.colors['del'+i])?'color:'+m.colors['del'+i]:''}">${d}</span>
+        </li>`).join('');
+
+    const scheduleHtml=(m.schedule||[]).map((day,di)=>{
+        const tasksHtml=(day.tasks||[]).map((t,ti)=>`
+            <li class="flex items-start gap-2 text-[#5d4231] text-sm">
+                <span class="mt-1.5 w-1 h-1 bg-[#cfa848]/60 rounded-full shrink-0"></span>
+                <span style="${(m.colors&&m.colors['task'+di+'_'+ti])?'color:'+m.colors['task'+di+'_'+ti]:''}">${t}</span>
+            </li>`).join('');
+        return `
+        <div class="bg-[#fdf7ec] border border-[#eaddcf] rounded-xl overflow-hidden shadow-sm" style="${(m.colors&&m.colors['dayBg'+di])?'background:'+m.colors['dayBg'+di]:''}">
+            <div class="p-4 flex items-center gap-4">
+                <div class="flex-shrink-0 w-16 h-16 rounded-lg flex flex-col items-center justify-center border border-[#eaddcf] shadow-sm" style="background:${(m.colors&&m.colors['dayIconBg'+di])||'#ffffff'};color:${(m.colors&&m.colors['dayNum'+di])||'#4a3426'}">
+                    <span class="text-xs uppercase font-bold opacity-50">${siteSettings.labelDay||'Jour'}</span>
+                    <span class="text-2xl font-bold">${day.day}</span>
+                </div>
+                <div class="flex-grow">
+                    <h3 class="font-bold text-[#4a3426] mb-2 border-l-2 border-[#cfa848] pl-2" style="${(m.colors&&m.colors['dayTitle'+di])?'color:'+m.colors['dayTitle'+di]:''}">${day.title}</h3>
+                    <ul class="grid grid-cols-1 gap-2">${tasksHtml}</ul>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+
+    const extraBlocksHtml=(m.extraBlocks&&m.extraBlocks.length>0)?m.extraBlocks.map((blk,bi)=>`
+        <div class="bg-[#f8f1e0] p-6 rounded-2xl border border-[#eaddcf] shadow-sm" style="${(m.colors&&m.colors['extraBg'+bi])?'background:'+m.colors['extraBg'+bi]+';':''}${m.heights&&m.heights['extraCard'+bi]?'min-height:'+m.heights['extraCard'+bi]+';':''}">
+            <h2 class="font-black text-xl text-[#4a3426] mb-3" style="${(m.colors&&m.colors['extraTitle'+bi])?'color:'+m.colors['extraTitle'+bi]:''}">${blk.title}</h2>
+            <p class="text-[#5d4231] text-sm leading-relaxed" style="${(m.colors&&m.colors['extraBody'+bi])?'color:'+m.colors['extraBody'+bi]:''}">${blk.body}</p>
+        </div>`).join(''):'';
+
+    const rendusHtml=(m.rendus&&m.rendus.length>0)?`
+        <div class="mt-10">
+            <div class="banner-gradient">
+                <h2 class="text-4xl md:text-5xl font-black text-[#4a3426] mb-3" style="line-height:1.2">Rendu Étudiants</h2>
+                <p class="text-lg text-[#5d4231] font-light">Une sélection de rendus.</p>
+            </div>
+            <div class="grid grid-cols-3 gap-6">
+                ${m.rendus.slice(0,3).map(r=>`
+                <div class="relative overflow-hidden rounded-xl border-2 border-[#4a3426] bg-white shadow-lg">
+                    <div class="aspect-square overflow-hidden bg-[#eaddcf]">
+                        <img src="${r.image}" alt="${r.student}" class="w-full h-full object-cover" style="${r.panX||r.panY||r.zoom?`object-position:calc(50% + ${r.panX||0}px) calc(50% + ${r.panY||0}px);transform:scale(${r.zoom||1});transform-origin:center center;`:''}">
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#4a3426]/90 via-[#4a3426]/20 to-transparent flex items-end p-5">
+                        <div>
+                            <p class="text-[#cfa848] font-bold text-lg mb-1">${r.student}</p>
+                            <p class="text-[#f8f1e0] text-xs uppercase tracking-wider">Rendu Étudiant</p>
+                        </div>
+                    </div>
+                </div>`).join('')}
+            </div>
+        </div>`:'';
+
+    return `
+    <div class="bg-[#4a3426] border-b-4 border-[#cfa848] shadow-md">
+        <div class="px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-[#cfa848] p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a3426" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+                </div>
+                <div>
+                    <div class="text-[#f8f1e0] font-bold text-lg leading-none">${siteSettings.siteTitle||'3D Masterclass'}</div>
+                    <span class="text-xs text-[#cfa848] font-bold tracking-wider uppercase">${siteSettings.siteSubtitle||'Syllabus Interactif'}</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-[#3a2418] border border-[#cfa848]/30">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfa848" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+                <span class="text-sm text-[#f8f1e0] font-medium">${siteSettings.siteBadge||'Parcours Pro \u2022 10 Semaines'}</span>
+            </div>
+        </div>
+    </div>
+    <div class="p-8 font-['Inter'] text-[#4a3426] bg-white">
+        <div class="banner-gradient mb-8">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="px-3 py-1 bg-[#cfa848]/15 text-[#4a3426] rounded-full text-xs font-bold uppercase tracking-widest border border-[#cfa848]/30">
+                    ${m.moduleLabel||'Module'} ${m.id}
+                </span>
+                <span class="text-[#4a3426]/40 text-sm font-medium">| ${m.weekLabel||'Semaine'} ${m.week}</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-[#4a3426] mb-4" style="line-height:1.2;${(m.colors&&m.colors.title)?'color:'+m.colors.title+';':''}">${m.title}</h1>
+            <p class="text-lg text-[#5d4231] max-w-2xl leading-relaxed" style="${(m.colors&&m.colors.description)?'color:'+m.colors.description:''}">${m.description}</p>
+            <div class="flex flex-wrap gap-2 mt-5">${toolsHtml}</div>
+        </div>
+        <div class="grid grid-cols-3 gap-8">
+            <div class="col-span-1 space-y-8">
+                <div class="bg-[#f8f1e0] p-6 rounded-2xl border border-[#eaddcf] shadow-sm" style="${(m.colors&&m.colors.objectiveBg)?'background:'+m.colors.objectiveBg:''}">
+                    <div class="flex items-center gap-3 mb-4 text-[#cfa848]">
+                        ${ICONS.trophy}
+                        <h2 class="font-black text-xl text-[#4a3426]">${siteSettings.labelObjective||'Objectif'}</h2>
+                    </div>
+                    <p class="text-[#5d4231] text-sm leading-relaxed" style="${(m.colors&&m.colors.objective)?'color:'+m.colors.objective:''}">${m.objective}</p>
+                </div>
+                <div class="bg-[#f8f1e0] p-6 rounded-2xl border border-[#eaddcf] shadow-sm" style="${(m.colors&&m.colors.deliverablesBg)?'background:'+m.colors.deliverablesBg:''}">
+                    <div class="flex items-center gap-3 mb-4 text-[#cfa848]">
+                        ${ICONS.checkCircle}
+                        <h2 class="font-black text-xl text-[#4a3426]">${siteSettings.labelDeliverables||'Livrables'}</h2>
+                    </div>
+                    <ul class="space-y-3">${deliverablesHtml}</ul>
+                </div>
+                ${extraBlocksHtml}
+            </div>
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-[#cfa848]">${ICONS.calendar}</span>
+                    <h2 class="text-2xl font-black text-[#4a3426]">${siteSettings.labelPlanning||'Planning de la semaine'}</h2>
+                </div>
+                <div class="space-y-4">${scheduleHtml}</div>
+            </div>
+        </div>
+        ${rendusHtml}
+    </div>`;
+}
+
+async function generateImages(){
+    const mode=document.querySelector('input[name="exportMode"]:checked').value;
+    let targets=[];
+    if(mode==='current'){
+        const m=modules.find(x=>x.id===currentId);
+        if(m) targets=[m];
+    } else if(mode==='all'){
+        targets=[...modules];
+    } else {
+        const fromId=parseInt(document.getElementById('exportFrom').value);
+        const toId=parseInt(document.getElementById('exportTo').value);
+        const fromIdx=modules.findIndex(x=>x.id===fromId);
+        const toIdx=modules.findIndex(x=>x.id===toId);
+        if(fromIdx>=0&&toIdx>=0){
+            const lo=Math.min(fromIdx,toIdx), hi=Math.max(fromIdx,toIdx);
+            targets=modules.slice(lo,hi+1);
+        }
+    }
+    if(!targets.length){alert('Aucun module sélectionné.');return;}
+
+    const btn=document.getElementById('exportGenBtn');
+    btn.disabled=true;
+    btn.style.opacity='0.5';
+    const prog=document.getElementById('exportProgress');
+    prog.classList.remove('hidden');
+    const bar=document.getElementById('exportProgressBar');
+    const txt=document.getElementById('exportProgressText');
+    bar.style.width='0%';
+
+    try{
+        for(let i=0;i<targets.length;i++){
+            const m=targets[i];
+            txt.textContent=`Module ${m.id} (${i+1}/${targets.length})…`;
+            bar.style.width=Math.round((i/targets.length)*100)+'%';
+
+            // Build the HTML fragment for this module
+            const html=buildModuleHtml(m);
+
+            // Send to server for Playwright headless Chromium screenshot
+            const res=await fetch('/api/export-png',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({html})
+            });
+
+            if(!res.ok){
+                const err=await res.json().catch(()=>({error:'Server error'}));
+                throw new Error(err.error||'Export failed');
+            }
+
+            // Download the PNG
+            const blob=await res.blob();
+            const url=URL.createObjectURL(blob);
+            const a=document.createElement('a');
+            a.href=url;
+            a.download=`module_${m.id}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Small delay between downloads
+            if(i<targets.length-1) await new Promise(r=>setTimeout(r,400));
+        }
+
+        bar.style.width='100%';
+        txt.textContent=targets.length===1?'Image téléchargée ✓':`${targets.length} images téléchargées ✓`;
+
+    }catch(err){
+        console.error('Export error:',err);
+        alert('Erreur lors de la capture : '+err.message);
+    }
+
+    setTimeout(()=>{
+        btn.disabled=false;
+        btn.style.opacity='1';
+        prog.classList.add('hidden');
+        bar.style.width='0%';
+    },2000);
+}
 </script>
 </body>
 </html>
