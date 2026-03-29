@@ -30,6 +30,12 @@
             padding: 2rem 2rem 2.5rem 2rem;
             margin: 0 0 1.5rem 0;
         }
+        /* Zoom activé uniquement au clic */
+        .rendu-card img { transition: transform 0.5s; }
+        .rendu-card.zoom-active { outline: 3px solid #cfa848; outline-offset: -3px; }
+        .rendu-card.zoom-active img { transform: scale(1.10) !important; }
+        .gallery-thumb.zoom-active { outline: 3px solid #cfa848; outline-offset: -3px; border-radius: 12px; }
+        .gallery-thumb.zoom-active img { transform: scale(1.07) !important; }
     </style>
     <script>
         tailwind.config = { theme: { extend: {} } }
@@ -257,7 +263,7 @@ const COURSE_DATA = [
       {
         "student": "Lola Geron",
         "image": "images/rendus/module_1/lola-geron-ig-_il-la_-layout002.webp",
-        "zoom": 1,
+        "zoom": 1.05,
         "panX": -52,
         "panY": 4
       },
@@ -275,8 +281,8 @@ const COURSE_DATA = [
         "student": "Luc Reynal",
         "image": "images/Box_modelling/luc-reynal.jpg",
         "zoom": 1,
-        "panX": 0,
-        "panY": 0
+        "panX": 3,
+        "panY": -3
       },
       {
         "student": "Raphael Jourdain",
@@ -1323,9 +1329,9 @@ function renderModuleDetail() {
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 ${m.rendus.slice(0, 3).map(r => `
-                <div class="group relative overflow-hidden rounded-xl border-2 border-[#4a3426] bg-white shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1" onclick="openLightbox('${r.image.replace(/'/g, "\\'")}')">
+                <div class="rendu-card group relative overflow-hidden rounded-xl border-2 border-[#4a3426] bg-white shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-1" onclick="handleRenduClick(event, this, '${r.image.replace(/'/g, "\\'")}')">
                     <div class="aspect-square overflow-hidden bg-[#eaddcf]">
-                        <img src="${r.image}" alt="Rendu - ${r.student}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" style="${r.panX||r.panY||r.zoom?`object-position:calc(50% + ${r.panX||0}px) calc(50% + ${r.panY||0}px);transform:scale(${r.zoom||1});transform-origin:center center;`:''}">
+                        <img src="${r.image}" alt="Rendu - ${r.student}" class="w-full h-full object-cover transition-transform duration-500" style="${r.panX||r.panY||r.zoom?`object-position:calc(50% + ${r.panX||0}px) calc(50% + ${r.panY||0}px);transform:scale(${r.zoom||1});transform-origin:center center;`:''}">
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-[#4a3426]/90 via-[#4a3426]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-5">
                         <div>
@@ -1477,10 +1483,9 @@ function openGallery(moduleId) {
     document.getElementById('galleryTitle').textContent = (SITE_SETTINGS.labelRendus||'Rendu Étudiants') + ' — ' + m.title;
     grid.innerHTML = m.rendus.map(r => {
         const safe = r.image.replace(/'/g, "\\'");
-        return `<div onclick="openLightbox('${safe}')" style="width:200px;cursor:pointer;flex:0 0 200px;">
+        return `<div class="gallery-thumb" onclick="handleGalleryThumbClick(event, this, '${safe}')" style="width:200px;cursor:pointer;flex:0 0 200px;">
             <div style="width:200px;height:200px;overflow:hidden;border-radius:12px;border:1px solid rgba(207,168,72,0.3);background:#eaddcf;">
-                <img src="${r.image}" alt="${r.student}" style="width:100%;height:100%;object-fit:cover;transition:transform .3s;${r.panX||r.panY||r.zoom?`object-position:calc(50% + ${r.panX||0}px) calc(50% + ${r.panY||0}px);transform:scale(${r.zoom||1});transform-origin:center center;`:''}"
-                    onmouseover="this.style.transform='scale(${((r.zoom||1)*1.07).toFixed(2)})'" onmouseout="this.style.transform='scale(${r.zoom||1})'">
+                <img src="${r.image}" alt="${r.student}" style="width:100%;height:100%;object-fit:cover;transition:transform .3s;${r.panX||r.panY||r.zoom?`object-position:calc(50% + ${r.panX||0}px) calc(50% + ${r.panY||0}px);transform:scale(${r.zoom||1});transform-origin:center center;`:''}">
             </div>
             <p style="margin-top:8px;text-align:center;font-size:13px;color:rgba(248,241,224,0.8);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.student}</p>
         </div>`;
@@ -1540,6 +1545,29 @@ function closeLightbox(event) {
     document.body.style.overflow = ''; // Restore scrolling
 }
 
+// Click-to-zoom : 1er clic = activer le zoom, 2e clic = ouvrir lightbox
+function handleRenduClick(event, card, imageSrc) {
+    event.stopPropagation();
+    if (card.classList.contains('zoom-active')) {
+        card.classList.remove('zoom-active');
+        openLightbox(imageSrc);
+    } else {
+        document.querySelectorAll('.rendu-card.zoom-active').forEach(el => el.classList.remove('zoom-active'));
+        card.classList.add('zoom-active');
+    }
+}
+
+function handleGalleryThumbClick(event, thumb, imageSrc) {
+    event.stopPropagation();
+    if (thumb.classList.contains('zoom-active')) {
+        thumb.classList.remove('zoom-active');
+        openLightbox(imageSrc);
+    } else {
+        document.querySelectorAll('.gallery-thumb.zoom-active').forEach(el => el.classList.remove('zoom-active'));
+        thumb.classList.add('zoom-active');
+    }
+}
+
 // Prevent closing when clicking on the image
 document.addEventListener('DOMContentLoaded', () => {
     const lightboxImage = document.getElementById('lightboxImage');
@@ -1548,6 +1576,13 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
         });
     }
+
+    // ═══ CLICK-TO-ZOOM : désactive le zoom au clic ailleurs ════════════
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.rendu-card.zoom-active') && !e.target.closest('.gallery-thumb.zoom-active')) {
+            document.querySelectorAll('.rendu-card.zoom-active, .gallery-thumb.zoom-active').forEach(el => el.classList.remove('zoom-active'));
+        }
+    });
 });
 </script>
 

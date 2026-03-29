@@ -29,9 +29,12 @@
     .tool-dropdown-item strong{color:#cfa848;font-weight:800}
     .tool-dup-flash{animation:dupFlash .6s ease}
     @keyframes dupFlash{0%,100%{outline-color:rgba(207,168,72,.3)}50%{outline-color:#e05a4e;outline-style:solid;outline-width:2px}}
-    .rendu-img-wrap{position:relative;overflow:hidden;cursor:default}
+    .rendu-img-wrap{position:relative;overflow:hidden;cursor:pointer}
     .rendu-img-wrap img{transform-origin:center center;transition:none}
     .rendu-img-wrap.panning{cursor:grabbing}
+    .rendu-img-wrap.edit-active{outline:2px solid #cfa848;outline-offset:-2px;cursor:default}
+    .rendu-img-wrap:not(.edit-active)::after{content:'🖱️ Cliquer pour éditer';position:absolute;bottom:6px;left:50%;transform:translateX(-50%);background:rgba(74,52,38,.7);color:#f8f1e0;font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap;z-index:6}
+    .rendu-img-wrap:not(.edit-active):hover::after{opacity:1}
     .rendu-zoom-badge{position:absolute;bottom:6px;right:6px;background:rgba(74,52,38,.7);color:#f8f1e0;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;pointer-events:none;opacity:0;transition:opacity .3s;z-index:6}
     .rendu-zoom-badge.visible{opacity:1}
     .rendu-reset-btn{position:absolute;bottom:6px;left:6px;background:rgba(74,52,38,.65);color:#f8f1e0;font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;cursor:pointer;opacity:0;transition:opacity .15s;z-index:6;border:none}
@@ -1276,7 +1279,7 @@ renderModuleDetail();markDirty();}
 // ════ RENDUS ══════════════════════════════════════════════════════════════════
 function removeRendu(i){const m=getModule(currentId);if(!m)return;pushUndo();m.rendus.splice(i,1);_renduSelected=null;renderModuleDetail();markDirty();}
 
-// — Image pan (middle-click drag) & zoom (wheel) —
+// — Image pan (middle-click drag) & zoom (wheel) — ONLY when edit-active —
 function renduImgStyle(r){
     const px=r.panX||0, py=r.panY||0, z=r.zoom||1;
     if(!px&&!py&&z===1) return 'pointer-events:none;';
@@ -1284,10 +1287,36 @@ function renduImgStyle(r){
 }
 
 let _panState=null;
+let _editActiveIdx=null; // index of the card whose image is currently editable
+
+function activateRenduEdit(e,i){
+    e.stopPropagation();
+    if(_editActiveIdx===i) return; // already active
+    deactivateRenduEdit();
+    _editActiveIdx=i;
+    const wrap=document.querySelector('[data-rendu-idx="'+i+'"]');
+    if(wrap) wrap.classList.add('edit-active');
+}
+function deactivateRenduEdit(){
+    if(_editActiveIdx!==null){
+        const wrap=document.querySelector('[data-rendu-idx="'+_editActiveIdx+'"]');
+        if(wrap) wrap.classList.remove('edit-active');
+    }
+    _editActiveIdx=null;
+}
+// click outside deactivates
+document.addEventListener('click',function(e){
+    if(_editActiveIdx!==null && !e.target.closest('.rendu-img-wrap[data-rendu-idx="'+_editActiveIdx+'"]')){
+        deactivateRenduEdit();
+    }
+});
 
 function renduImgMouseDown(e,i){
-    // Middle button (button===1) = pan
+    // Left click = activate edit mode
+    if(e.button===0){ activateRenduEdit(e,i); return; }
+    // Middle button (button===1) = pan, only if active
     if(e.button!==1) return;
+    if(_editActiveIdx!==i) return;
     e.preventDefault();
     e.stopPropagation();
     const m=getModule(currentId); if(!m?.rendus?.[i]) return;
@@ -1320,6 +1349,8 @@ function renduImgMouseDown(e,i){
 }
 
 function renduImgWheel(e,i){
+    // Only zoom if this image is in edit-active mode
+    if(_editActiveIdx!==i) return; // let the page scroll normally
     e.preventDefault();
     e.stopPropagation();
     const m=getModule(currentId); if(!m?.rendus?.[i]) return;
@@ -1341,6 +1372,7 @@ function resetRenduTransform(i){
     const m=getModule(currentId); if(!m?.rendus?.[i]) return;
     pushUndo();
     m.rendus[i].panX=0; m.rendus[i].panY=0; m.rendus[i].zoom=1;
+    _editActiveIdx=null;
     renderModuleDetail(); markDirty();
 }
 
